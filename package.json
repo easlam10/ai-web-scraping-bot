@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.5.0",
+    "dropbox": "^10.34.0",
+    "exceljs": "^4.4.0",
+    "puppeteer": "^24.6.1",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "twilio": "^5.5.2"
+  }
+}
