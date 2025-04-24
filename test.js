@@ -1,17 +1,15 @@
 const puppeteer = require("puppeteer-extra");
-const cron = require("node-cron");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const cheerio = require("cheerio");
 const ExcelJS = require("exceljs");
-const path = require("path");
-const uploadFile = require("./services/dropboxService");
-const { sendWhatsAppWithMedia } = require("./services/twilioService");
-const fs = require("fs");
-const addLogoToImage = require("./utils/addLogoToImage");
+const path = require('path');
+const uploadExcelFile = require('./services/dropboxService');
+const { sendWhatsAppWithMedia } = require('./services/twilioService');
+const fs = require('fs');
 
 // Ensure outputs directory exists
-if (!fs.existsSync("./outputs")) {
-  fs.mkdirSync("./outputs");
+if (!fs.existsSync('./outputs')) {
+  fs.mkdirSync('./outputs');
 }
 
 puppeteer.use(StealthPlugin());
@@ -25,20 +23,20 @@ async function fetchPageContent(url) {
   return html;
 }
 
+
 function extractStructuredContent(html) {
   const $ = cheerio.load(html);
   const content = [];
 
   // Remove unwanted elements
-  $('script, style, noscript, iframe, svg, link, a:not([href^="mailto:"]), footer, nav, form, h3.widget-head').remove();
-
+  $("script, style, noscript, iframe, svg, link, a, footer, nav").remove();
 
   // Process content
   $("body")
     .find("h1, h2, h3, h4, h5, h6, p, ul, ol, table")
     .each(function () {
       const $element = $(this);
-
+      
       // Skip elements that are inside a table
       if ($element.parents("table").length > 0) {
         return;
@@ -49,6 +47,7 @@ function extractStructuredContent(html) {
 
       if (!text) return;
 
+      // Rest of the processing remains the same
       if (tag.match(/^h[1-6]$/)) {
         content.push({
           type: "heading",
@@ -62,23 +61,24 @@ function extractStructuredContent(html) {
           text: text,
           element: $element,
         });
-      } if (tag === "ul" || tag === "ol") {
+      } 
+      else if (tag === "ul" || tag === "ol") {
         const items = [];
-        $(this).find("li").each(function () {
-          let itemText = $(this).html().trim();
-          itemText = itemText.replace(/<br\s*\/?>/gi, "\n");
-          itemText = cheerio.load(itemText).text().trim();
-      
-          // Skip empty or purely numeric list items
-          if (itemText && !/^\d+$/.test(itemText)) {
+        $(this)
+          .find("li")
+          .each(function () {
+            let itemText = $(this).html().trim();
+            itemText = itemText.replace(/<br\s*\/?>/gi, "\n");
+            itemText = cheerio.load(itemText).text().trim();
             items.push(itemText);
-          }
+          });
+        content.push({
+          type: "list",
+          items: items,
+          ordered: tag === "ol",
+          element: $(this),
         });
-        if (items.length > 0) {
-          content.push({ type: "list", items, ordered: tag === "ol", element: $(this) });
-        }
-      }
-       else if (tag === "table") {
+      } else if (tag === "table") {
         const tableData = [];
         $(this)
           .find("tr")
@@ -87,9 +87,9 @@ function extractStructuredContent(html) {
             $(this)
               .find("th, td")
               .each(function () {
-                let cellHtml = $(this).html().trim();
-                cellHtml = cellHtml.replace(/<br\s*\/?>/gi, "\n");
-                const cellText = cheerio.load(cellHtml).text().trim();
+                let cellText = $(this).html().trim();
+                cellText = cellText.replace(/<br\s*\/?>/gi, "\n");
+                cellText = cheerio.load(cellText).text().trim();
 
                 const rowspan = parseInt($(this).attr("rowspan") || 1);
                 const colspan = parseInt($(this).attr("colspan") || 1);
@@ -112,21 +112,8 @@ function extractStructuredContent(html) {
       }
     });
 
-    $("a[href^='mailto:']").each(function () {
-      const email = $(this).attr("href").replace("mailto:", "").trim();
-      const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-      if (email && isValidEmail) {
-        content.push({ type: "email", email, element: $(this) });
-      }
-    });
-
   return content;
 }
-
-
-
-
-
 
 async function writeToExcel(pages, fileName = "nust_admissions_data.xlsx") {
   const workbook = new ExcelJS.Workbook();
@@ -392,19 +379,18 @@ async function writeToExcel(pages, fileName = "nust_admissions_data.xlsx") {
   console.log(`✅ Excel file created with multiple sheets saved: ${fileName}`);
 }
 
-// function extractNET2025Date(html) {
-//   const regex =
-//     /registration.*?NET[-\s]?2025.*?(till|until)?\s*([0-9]{1,2}(st|nd|rd|th)?\s+\w+\s+2025)/i;
-//   const match = html.match(regex);
-//   return match ? match[2] : null;
-// }
+function extractNET2025Date(html) {
+  const regex = /registration.*?NET[-\s]?2025.*?(till|until)?\s*([0-9]{1,2}(st|nd|rd|th)?\s+\w+\s+2025)/i;
+  const match = html.match(regex);
+  return match ? match[2] : null;
+}
+
 
 async function main() {
   try {
-    const unis = [
-      {
-          name: "NUST",
-          urls: [
+    const urls = [
+      
+         
             {
               url: "https://nust.edu.pk/admissions/undergraduates/updates-on-ug-admissions/",
               name: "Updates on UG Admissions",
@@ -461,281 +447,37 @@ async function main() {
               url: "https://nust.edu.pk/about-us/resources-offices/ ",
               name: "Contact Details",
             },
-          ],
-        },
-  
-        {
-          name: "NUMS",
-          urls: [
-            {
-              url: "https://numspak.edu.pk/admissions-details.php",
-              name: "NUMS Admissions",
-            },
-            {
-              url: "https://numspak.edu.pk/acad/nums-departments ",
-              name: "NUMS Departments",
-            },
-            {
-              url: "https://numspak.edu.pk/acad/undergraduate",
-              name: "Undergraduate Programs",
-            },
-            {
-              url: "https://numspak.edu.pk/course/mbbs",
-              name: "MBBS",
-            },
-            {
-              url: "https://numspak.edu.pk/course/bds",
-              name: "BDS",
-            },
-            {
-              url: "https://numspak.edu.pk/course/bs-nursing-generic",
-              name: "BS Nursing (Generic)",
-            },
-            {
-              url: "https://numspak.edu.pk/course/bs-cardiac-perfusion-cp  ",
-              name: "BS Cardiac Perfusion (CP)",
-            },
-            {
-              url: "https://numspak.edu.pk/course/bs-social-science-of-health",
-              name: "BS Social Science of Health",
-            },
-            {
-              url: "https://numspak.edu.pk/course/bs-biological-sciences-genetics",
-              name: "BS Biological Sciences (Genetics)",
-            },
-            {
-              url: "https://numspak.edu.pk/course/bs-biological-sciences-microbiology",
-              name: "BS Biological Sciences (Microbiology)",
-            },
-            {
-              url: "https://numspak.edu.pk/course/bs-medical-imaging-technology-mit",
-              name: "BS Medical Imaging Technology (MIT)",
-            },
-            {
-              url: "https://numspak.edu.pk/course/bs-Sociology",
-              name: "BS Sociology",
-            },
-            {
-              url: "https://numspak.edu.pk/course/bs-speech-language-pathology",
-              name: "BS Speech & Language Pathology",
-            },
-            {
-              url: "https://numspak.edu.pk/course/bs-nursing-post-rn",
-              name: "BS Nursing (Post RN)",
-            },
-            {
-              url: "https://numspak.edu.pk/course/bs-public-health-bsph",
-              name: "BS Public Health (BSPH)",
-            },
-            {
-              url: "https://numspak.edu.pk/course/bs-psychology",
-              name: "BS Psychology",
-            },
-            {
-              url: "https://numspak.edu.pk/course/bs-biological-sciences-biotechnology",
-              name: "BS Biological Sciences (Biotechnology)",
-            },
-            {
-              url: "https://numspak.edu.pk/course/bs-medical-laboratory-technology-mlt",
-              name: "BS Medical Laboratory Technology (MLT)",
-            },
-            {
-              url: "https://numspak.edu.pk/course/BS-in-Human-Nutrition-and-Dietetics",
-              name: "BS in Human Nutrition and Dietetics",
-            },
-            {
-              url: "https://numspak.edu.pk/course/bs-emergency-and-clinical-medicine-technology",
-              name: "BS Emergency And Clinical Medicine Technology",
-            },
-            {
-              url: "https://numspak.edu.pk/course/bs-prosthetics-orthotics-pno",
-              name: "BS Prosthetics & Orthotics (PNO)",
-            },
-            {
-              url: "https://numspak.edu.pk/upload/media/2024-HEC-Academic-UnderGraduate-Policy-v1-20231720175663.pdf",
-              name: "Undergraduate Policies",
-            },
-            {
-              url: "https://www.facebook.com/NUMSOfficial/?ref=embed_page#",
-              name: "Digital Page Link",
-            },
-            {
-              url: "https://numspak.edu.pk/contact.php",
-              name: "Contact Details",
-            },
-          ],
-        },
-  
-        {
-          name: "PIEAS",
-          urls: [
-            {
-              url: "https://admissions.pieas.edu.pk/Admissions/BS.html",
-              name: "Undergraduate programs",
-            },
-            {
-              url: "https://admissions.pieas.edu.pk/Academic_Rules/academic_rules.html",
-              name: "Rules and Policies",
-            },
-            {
-              url: "https://admissions.pieas.edu.pk/Admissions/schedule.html",
-              name: "BS Admissions (2025-2029)",
-            },
-            {
-              url: "https://admissions.pieas.edu.pk/Academic_Rules/fee_structure.html",
-              name: "Fee Structure",
-            },
-            {
-              url: "https://www.facebook.com/PIEAS.official.pk/ ",
-              name: "Digital Media Link",
-            },
-            {
-              url: "https://www.pieas.edu.pk/contactusvone.cshtml  ",
-              name: "Contact Details",
-            },
-          ],
-        },
-  
-        {
-          name: "GIKI",
-          urls: [
-            {
-              url: "https://giki.edu.pk/admissions/admissions-undergraduates/",
-              name: "Undergraduate Admissions",
-            },
-            {
-              url: "https://giki.edu.pk/admissions/admissions-undergraduates/eligibility-criteria/ ",
-              name: "Eligibility and Assessment Criteria",
-            },
-            {
-              url: "https://giki.edu.pk/admissions/admissions-undergraduates/undergraduate-admission-test-syllabus/  ",
-              name: "Undergraduate Admission Test Syllabus",
-            },
-            {
-              url: "https://giki.edu.pk/admissions/admissions-undergraduates/ugradhow-to-apply/  ",
-              name: "Application Procedure (How to Apply)",
-            },
-            {
-              url: "https://giki.edu.pk/admissions/admissions-undergraduates/ugrad-fees-and-expenses/  ",
-              name: "Fees and Expenses",
-            },
-            {
-              url: "https://giki.edu.pk/payment/",
-              name: "Payment Methods",
-            },
-            {
-              url: "https://giki.edu.pk/transfer-from-other-universities/",
-              name: "Transfer from other Universities",
-            },
-            {
-              url: "https://www.facebook.com/OfficialGIKI/",
-              name: "Digital Media Link",
-            },
-            {
-              url: "https://giki.edu.pk/contact-us/",
-              name: "Contact Details",
-            },
-          ],
-        },
-  
-        {
-          name: "FAST",
-          urls: [
-            {
-              url: "https://nu.edu.pk/Admissions/Schedule",
-              name: "Admission Schedule",
-            },
-            {
-              url: "https://nu.edu.pk/Admissions/HowToApply",
-              name: "Admission Procedure",
-            },
-            {
-              url: "https://nu.edu.pk/Degree-Programs",
-              name: "Program Offered",
-            },
-            {
-              url: "https://nu.edu.pk/Admissions/EligibilityCriteria",
-              name: "Eligibility Criteria",
-            },
-            {
-              url: "https://nu.edu.pk/Admissions/TestPattern",
-              name: "Test Pattern",
-            },
-            {
-              url: "https://nu.edu.pk/Admissions/FeeStructure",
-              name: "Fee Structure",
-            },
-            {
-              url: "https://www.facebook.com/FastNUIslamabadOfficial?_rdc=1&_rdr#",
-              name: "Digital Media Link",
-            },
-            {
-              url: "https://nu.edu.pk/home/ContactUs",
-              name: "Contact Details",
-            },
-          ],
-        },
+             
       ];
-   
+    console.log(`🌐 Fetching data from: ${url}`);
 
-    for (const uni of unis) {
-      const pages = [];
-      // let deadlineDate = null; // Declare before the loop
+    // Scrape website
+    const html = await fetchPageContent(url);
+    const structuredData = extractStructuredContent(html);
 
-      for (const { url, name } of uni.urls) {
-        console.log(`🌐 Scraping: ${url}`);
-        const html = await fetchPageContent(url);
-        const structuredData = extractStructuredContent(html);
-        pages.push({ name, structuredData });
-      }
-      // if (name === "Updates on UG Admissions") {
-      //   deadlineDate = extractNET2025Date(html);
-      // }
+    // Save Excel file
+    const fileName = path.join(__dirname, 'outputs', `nust_admissions_${Date.now()}.xlsx`);
+    await writeToExcel(structuredData, fileName);
+    console.log(`✅ Excel file saved: ${fileName}`);
 
-      // Save Excel file per university
-      const fileName = path.join(
-        __dirname,
-        "outputs",
-        `${uni.name.toLowerCase()}_admissions_${Date.now()}.xlsx`
-      );
-      await writeToExcel(pages, fileName);
-      console.log(`✅ Excel file saved: ${fileName}`);
-      // Upload to Dropbox
+    // Upload to Dropbox
+    const fileUrl = await uploadExcelFile(fileName);
+    console.log(`📤 File uploaded to Dropbox: ${fileUrl}`);
 
-      // const fileUrl = await uploadFile(fileName);
-      // console.log(`📤 File uploaded to Dropbox: ${fileUrl}`);
+    // Prepare image URL (use your Dropbox link with raw=1)
+    const imageUrl = 'https://www.dropbox.com/scl/fi/kr9l7k60p93d1k6xubo63/image.jpg?rlkey=chqelr9eb0qq2kdtg9fwhbqbz&raw=1';
 
-      // Prepare image URL (use your Dropbox link with raw=1)
-      //   const bannerPath = path.join(__dirname, 'public/images/banner.jpg');
-      //   const logoPath = path.join(__dirname, 'public/images/logo.png');
-      //   const finalImagePath = path.join(__dirname, 'outputs/banner_with_logo.jpg');
+    // Extract date and build message
+    const deadlineDate = extractNET2025Date(html);
+    const message = deadlineDate
+      ? `🗓️ Registration for *NET-2025 (Series-4)* will remain open till *${deadlineDate}*\n\n📊 See attached data`
+      : `ℹ️ Latest NUST Admission Updates\n\n📊 See attached data`;
 
-      //   // ✅ Generate image with logo
-      //   await addLogoToImage(bannerPath, logoPath, finalImagePath);
+    // Send WhatsApp with both media
+    await sendWhatsAppWithMedia(message, fileUrl, imageUrl);
+    console.log('🚀 WhatsApp notification sent!');
 
-      //   // ✅ Upload image to Dropbox
-      //   const imageUrl = await uploadFile(finalImagePath);
-      //   console.log(`📤 Logo image uploaded to Dropbox: ${imageUrl}`);
-
-      //   const message = deadlineDate
-      //     ? `*🔔 National University of Sciences & Technology*\n` +
-      //       "`Entry Test`\n" +
-      //       `NET-IV registrations are now open.\n*Deadline:* ${deadlineDate}\n\n` +
-      //       "`Tap to Join, Share & Shine`\n" +
-      //       `https://whatsapp.com/channel/0029Vb9qWtQGE56sYuYipX1P`
-      //     : `ℹ️ Latest NUST Admission Updates\n\n📊 See attached data`;
-
-      //   // Send WhatsApp with both media
-      //   await sendWhatsAppWithMedia(message, imageUrl);
-      //   console.log("🚀 WhatsApp notification sent!");
-    }
   } catch (error) {
-    console.error("❌ Process failed:", error);
+    console.error('❌ Process failed:', error);
   }
-}
-
-main();
-// cron.schedule("30 6 * * 1", async () => {
-//   console.log("⏳ Running scheduled job at", new Date().toLocaleTimeString());
-//   await main();
-// });
+}main()
