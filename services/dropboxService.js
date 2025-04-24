@@ -8,7 +8,7 @@ const dbx = new Dropbox({
   accessToken: config.dropbox.accessToken
 });
 
-async function uploadExcelFile(filePath) {
+async function uploadFile(filePath) {
   try {
     // Validate file
     if (!fs.existsSync(filePath)) {
@@ -17,7 +17,8 @@ async function uploadExcelFile(filePath) {
 
     // Read file content
     const fileContent = fs.readFileSync(filePath);
-    const fileName = `nust_admissions_${Date.now()}.xlsx`;
+    const originalExt = path.extname(filePath); // Keeps .xlsx or .jpg
+    const fileName = `nust_admissions_${Date.now()}${originalExt}`;
 
     // Upload with explicit permissions
     const response = await dbx.filesUpload({
@@ -50,4 +51,4 @@ async function uploadExcelFile(filePath) {
   }
 }
 
-module.exports = uploadExcelFile;
+module.exports = uploadFile;
