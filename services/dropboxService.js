@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const config = require('../config/keys');
 
+
 // Initialize with full permissions
 const dbx = new Dropbox({
   accessToken: config.dropbox.accessToken
@@ -18,7 +19,8 @@ async function uploadFile(filePath) {
     // Read file content
     const fileContent = fs.readFileSync(filePath);
     const originalExt = path.extname(filePath); // Keeps .xlsx or .jpg
-    const fileName = `nust_admissions_${Date.now()}${originalExt}`;
+    const baseName = path.basename(filePath, originalExt); 
+    const fileName = `${baseName}${originalExt}`; 
 
     // Upload with explicit permissions
     const response = await dbx.filesUpload({

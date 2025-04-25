@@ -392,12 +392,12 @@ async function writeToExcel(pages, fileName = "nust_admissions_data.xlsx") {
   console.log(`✅ Excel file created with multiple sheets saved: ${fileName}`);
 }
 
-// function extractNET2025Date(html) {
-//   const regex =
-//     /registration.*?NET[-\s]?2025.*?(till|until)?\s*([0-9]{1,2}(st|nd|rd|th)?\s+\w+\s+2025)/i;
-//   const match = html.match(regex);
-//   return match ? match[2] : null;
-// }
+function extractNET2025Date(html) {
+  const regex =
+    /registration.*?NET[-\s]?2025.*?(till|until)?\s*([0-9]{1,2}(st|nd|rd|th)?\s+\w+\s+2025)/i;
+  const match = html.match(regex);
+  return match ? match[2] : null;
+}
 
 async function main() {
   try {
@@ -680,17 +680,19 @@ async function main() {
 
     for (const uni of unis) {
       const pages = [];
-      // let deadlineDate = null; // Declare before the loop
+      let deadlineDate = null; // Declare before the loop
 
       for (const { url, name } of uni.urls) {
         console.log(`🌐 Scraping: ${url}`);
         const html = await fetchPageContent(url);
         const structuredData = extractStructuredContent(html);
         pages.push({ name, structuredData });
+
+        if (name === "Updates on UG Admissions" && uni.name === "NUST") {
+          deadlineDate = extractNET2025Date(html);
+        }
       }
-      // if (name === "Updates on UG Admissions") {
-      //   deadlineDate = extractNET2025Date(html);
-      // }
+      
 
       // Save Excel file per university
       const fileName = path.join(
@@ -702,32 +704,32 @@ async function main() {
       console.log(`✅ Excel file saved: ${fileName}`);
       // Upload to Dropbox
 
-      // const fileUrl = await uploadFile(fileName);
-      // console.log(`📤 File uploaded to Dropbox: ${fileUrl}`);
+      const fileUrl = await uploadFile(fileName);
+      console.log(`📤 File uploaded to Dropbox: ${fileUrl}`);
 
       // Prepare image URL (use your Dropbox link with raw=1)
-      //   const bannerPath = path.join(__dirname, 'public/images/banner.jpg');
-      //   const logoPath = path.join(__dirname, 'public/images/logo.png');
-      //   const finalImagePath = path.join(__dirname, 'outputs/banner_with_logo.jpg');
+        const bannerPath = path.join(__dirname, `public/images/${uni.name.toLowerCase()}_banner.jpg`);
+        const logoPath = path.join(__dirname, 'public/images/logo.png');
+        const finalImagePath = path.join(__dirname, `outputs/${uni.name.toLowerCase()}_banner_with_logo.jpg`);
 
-      //   // ✅ Generate image with logo
-      //   await addLogoToImage(bannerPath, logoPath, finalImagePath);
+        // ✅ Generate image with logo
+        await addLogoToImage(bannerPath, logoPath, finalImagePath);
 
-      //   // ✅ Upload image to Dropbox
-      //   const imageUrl = await uploadFile(finalImagePath);
-      //   console.log(`📤 Logo image uploaded to Dropbox: ${imageUrl}`);
+        // ✅ Upload image to Dropbox
+        const imageUrl = await uploadFile(finalImagePath);
+        console.log(`📤 Logo image uploaded to Dropbox: ${imageUrl}`);
 
-      //   const message = deadlineDate
-      //     ? `*🔔 National University of Sciences & Technology*\n` +
-      //       "`Entry Test`\n" +
-      //       `NET-IV registrations are now open.\n*Deadline:* ${deadlineDate}\n\n` +
-      //       "`Tap to Join, Share & Shine`\n" +
-      //       `https://whatsapp.com/channel/0029Vb9qWtQGE56sYuYipX1P`
-      //     : `ℹ️ Latest NUST Admission Updates\n\n📊 See attached data`;
+        const message = deadlineDate
+          ? `*🔔 National University of Sciences & Technology*\n` +
+            "`Entry Test`\n" +
+            `NET-IV registrations are now open.\n*Deadline:* ${deadlineDate}\n\n` +
+            "`Tap to Join, Share & Shine`\n" +
+            `https://whatsapp.com/channel/0029Vb9qWtQGE56sYuYipX1P`
+          : `ℹ️ Latest ${uni.name} Admission Updates\n\n📊 See attached data`;
 
-      //   // Send WhatsApp with both media
-      //   await sendWhatsAppWithMedia(message, imageUrl);
-      //   console.log("🚀 WhatsApp notification sent!");
+        // Send WhatsApp with both media
+        await sendWhatsAppWithMedia(message, imageUrl);
+        console.log("🚀 WhatsApp notification sent!");
     }
   } catch (error) {
     console.error("❌ Process failed:", error);
