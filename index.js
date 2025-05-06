@@ -1,16 +1,20 @@
 // const cron = require("node-cron");
 const scrapNust = require("./scrapers/nustScraper");
-const scrapNums = require("./scrapers/numsScraper");
-const scrapPieas = require("./scrapers/pieasScraper");
-const scrapGiki = require("./scrapers/gikiScraper");
-const scrapFast = require("./scrapers/fastScraper");
+// const scrapNums = require("./scrapers/numsScraper");
+// const scrapPieas = require("./scrapers/pieasScraper");
+// const scrapGiki = require("./scrapers/gikiScraper");
+// const scrapFast = require("./scrapers/fastScraper");
+
+
 
 async function main() {
   await scrapNust();
-  await scrapNums();
-  await scrapPieas();
-  await scrapGiki();
-  await scrapFast();
+  // await scrapNums();
+  // await scrapPieas();
+  // await scrapGiki();
+
+  // await scrapFast();
+
 }
 
 main();
