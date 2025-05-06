@@ -146,7 +146,7 @@ async function scrapFast() {
    
     messages.push(fastMessages.howToApply());
 
-    console.log(messages)
+  
 
     const fileName = path.join(
         outputsDir,
@@ -156,8 +156,8 @@ async function scrapFast() {
     console.log(`✅ Excel file saved: ${fileName}`);
     // Upload to Dropbox
 
-    // const fileUrl = await uploadFile(fileName);
-    // console.log(`📤 File uploaded to Dropbox: ${fileUrl}`);
+    const fileUrl = await uploadFile(fileName);
+    console.log(`📤 File uploaded to Dropbox: ${fileUrl}`);
 
     // // Prepare image URL (use your Dropbox link with raw=1)
     // const bannerPath = path.join(publicDir, 'images', 'nust_banner.jpg');
@@ -173,10 +173,10 @@ async function scrapFast() {
 
 
   // Send messages one-by-one on WhatsApp
-  for (const [i, msg] of messages.entries()) {
-    console.log(`📨 Sending message ${i + 1}...`);
-    await sendWhatsAppWithMedia(msg);
-  }
+  // for (const [i, msg] of messages.entries()) {
+  //   console.log(`📨 Sending message ${i + 1}...`);
+  //   await sendWhatsAppWithMedia(msg);
+  // }
   } catch (error) {
     console.error("❌ Process failed:", error);
     if (error.code === 'ENOENT') {
