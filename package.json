@@ -1,16 +1,1 @@
-{
-  "dependencies": {
-    "@google/generative-ai": "^0.24.1",
-    "axios": "^1.9.0",
-    "cheerio": "^1.0.0",
-    "dotenv": "^16.5.0",
-    "dropbox": "^10.34.0",
-    "exceljs": "^4.4.0",
-    "node-cron": "^3.0.3",
-    "puppeteer": "^24.6.1",
-    "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.2",
-    "sharp": "^0.34.1",
-    "twilio": "^5.5.2"
-  }
-}
+{"name":"uni-scraper","version":"1.0.0","main":"server.js","scripts":{"start":"node server.js","cron":"node cron.js","test":"echo \"No tests yet\" && exit 0"},"dependencies":{"@google/generative-ai":"^0.24.1","@sparticuz/chromium-min":"^133.0.0","axios":"^1.9.0","cheerio":"^1.0.0","dotenv":"^16.5.0","dropbox":"^10.34.0","exceljs":"^4.4.0","node-cron":"^3.0.3","puppeteer":"^24.6.1","puppeteer-extra":"^3.3.6","puppeteer-extra-plugin-stealth":"^2.11.2","sharp":"^0.34.1","twilio":"^5.5.2"},"engines":{"node":"18.x"}}
