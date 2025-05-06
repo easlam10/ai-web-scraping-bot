@@ -1,10 +1,11 @@
 const { extractPieasStructuredContent } = require("../extraction/extractPieas");
-const { extractThirdTestApplyDate, extractThirdTestDate } = require("../importantInfo/pieasInfo");
 const { sendWhatsAppWithMedia } = require("../services/twilioService");
 const uploadFile = require("../services/dropboxService");
 const addLogoToImage = require("../services/addLogoToImage");
 const { writeToExcel } = require("../services/excelWriter");
 const { fetchPageContent } = require("../services/fetchPageContent");
+const { extractDatesFromPieasStructuredContent } = require("../importantInfo/extractPieasInfo");
+const pieasMessages = require("../messageTemplates/pieasMessages");
 const path = require("path");
 const fs = require("fs");
 const projectRoot = path.join(__dirname, '..');
@@ -26,35 +27,41 @@ async function scrapPieas() {
     
     
       const pieasUrls =  [
-        {
-          url: "https://admissions.pieas.edu.pk/Admissions/BS.html",
-          name: "Undergraduate programs",
-        },
-        {
-          url: "https://admissions.pieas.edu.pk/Academic_Rules/academic_rules.html",
-          name: "Rules and Policies",
-        },
+        // {
+        //   url: "https://admissions.pieas.edu.pk/Admissions/BS.html",
+        //   name: "Undergraduate programs",
+        // },
+        // {
+        //   url: "https://admissions.pieas.edu.pk/Academic_Rules/academic_rules.html",
+        //   name: "Rules and Policies",
+        // },
         {
           url: "https://admissions.pieas.edu.pk/Admissions/schedule.html",
           name: "BS Admissions (2025-2029)",
         },
-        {
-          url: "https://admissions.pieas.edu.pk/Academic_Rules/fee_structure.html",
-          name: "Fee Structure",
-        },
-        {
-          url: "https://www.facebook.com/PIEAS.official.pk/ ",
-          name: "Digital Media Link",
-        },
-        {
-          url: "https://www.pieas.edu.pk/contactusvone.cshtml  ",
-          name: "Contact Details",
-        },
+        // {
+        //   url: "https://admissions.pieas.edu.pk/Academic_Rules/fee_structure.html",
+        //   name: "Fee Structure",
+        // },
+        // {
+        //   url: "https://www.facebook.com/PIEAS.official.pk/ ",
+        //   name: "Digital Media Link",
+        // },
+        // {
+        //   url: "https://www.pieas.edu.pk/contactusvone.cshtml  ",
+        //   name: "Contact Details",
+        // },
       ]
 
     const pages = [];
-    let deadlineDate = null; // Declare before the loop
-    let testDate = null;
+    let messages = [];
+    let dynamicData = {
+      thirdTestRegisteration : null,
+      thirdTestDate : null,
+      meritNumberAnnouncement : null,
+      classesCommencementDate : null,
+
+    }
 
     for (const { url, name } of pieasUrls) {
       console.log(`🌐 Scraping: ${url}`);
@@ -62,11 +69,43 @@ async function scrapPieas() {
       const structuredData = extractPieasStructuredContent(html);
       pages.push({ name, structuredData });
 
-      if (name === "BS Admissions (2025-2029)") {
-        deadlineDate = extractThirdTestApplyDate(html);
-        testDate = extractThirdTestDate(html);
-      }
+      const dates = extractDatesFromPieasStructuredContent(structuredData)
+
+      dynamicData.thirdTestRegisteration = dates.thirdTestApplication
+      dynamicData.thirdTestDate = dates.thirdTestDate
+      dynamicData.meritNumberAnnouncement = dates.meritNumberAnnouncementDate
+      dynamicData.classesCommencementDate = dates.joiningDate
     }
+
+    console.log(dynamicData)
+
+    if (dynamicData.thirdTestRegisteration) {
+      messages.push(pieasMessages.thirdTestDeadline({
+        openingDate: dynamicData.thirdTestRegisteration.openingDate,
+        deadline: dynamicData.thirdTestRegisteration.deadlineDate,
+        deadlineWithLateFees: dynamicData.thirdTestRegisteration.lateFeeDeadlineDate,
+      }))
+    }
+
+    if (dynamicData.thirdTestDate) {
+      messages.push(pieasMessages.thirdTest({
+        date: dynamicData.thirdTestDate,
+      }))
+    }
+
+    if (dynamicData.meritNumberAnnouncement) {
+      messages.push(pieasMessages.meritNumber({
+        date: dynamicData.meritNumberAnnouncement,
+      }))
+    }
+
+    if (dynamicData.classesCommencementDate) {
+      messages.push(pieasMessages.classesCommencement({
+        classesCommencementDate: dynamicData.classesCommencementDate,
+      }))
+    }
+
+    console.log(messages);
 
     const fileName = path.join(
         outputsDir,
@@ -90,17 +129,13 @@ async function scrapPieas() {
     // const imageUrl = await uploadFile(finalImagePath);
     // console.log(`📤 Logo image uploaded to Dropbox: ${imageUrl}`);
 
-    // const message = deadlineDate
-    //   ? `*🔔 PIEAS, Islamabad*\n` +
-    //     "`Admission Schedule`\n" +
-    //     `PIEAS has announced its schedule for the third Entrance Exam.\n*Deadline:* ${deadlineDate}\n*Test Date:* ${testDate}\n\n` +
-    //     "`Tap to Join, Share & Shine`\n" +
-    //     `https://whatsapp.com/channel/0029Vb9qWtQGE56sYuYipX1P`
-    //   : `ℹ️ Latest Nust Admission Updates\n\n📊 See attached data`;
+    
 
-    // // Send WhatsApp with both media
-    // await sendWhatsAppWithMedia(message, imageUrl);
-    // console.log("🚀 WhatsApp notification sent!");
+ // Send messages one-by-one on WhatsApp
+ for (const [i, msg] of messages.entries()) {
+  console.log(`📨 Sending message ${i + 1}...`);
+  await sendWhatsAppWithMedia(msg);
+}
   } catch (error) {
     console.error("❌ Process failed:", error);
     if (error.code === 'ENOENT') {
