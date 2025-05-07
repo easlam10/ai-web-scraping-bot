@@ -31,38 +31,38 @@ async function scrapGiki() {
         url: "https://giki.edu.pk/admissions/admissions-undergraduates/",
         name: "Undergraduate Admissions",
       },
-      // {
-      //   url: "https://giki.edu.pk/admissions/admissions-undergraduates/eligibility-criteria/ ",
-      //   name: "Eligibility and Assessment Criteria",
-      // },
-      // {
-      //   url: "https://giki.edu.pk/admissions/admissions-undergraduates/undergraduate-admission-test-syllabus/  ",
-      //   name: "Undergraduate Admission Test Syllabus",
-      // },
-      // {
-      //   url: "https://giki.edu.pk/admissions/admissions-undergraduates/ugradhow-to-apply/  ",
-      //   name: "Application Procedure (How to Apply)",
-      // },
-      // {
-      //   url: "https://giki.edu.pk/admissions/admissions-undergraduates/ugrad-fees-and-expenses/  ",
-      //   name: "Fees and Expenses",
-      // },
-      // {
-      //   url: "https://giki.edu.pk/payment/",
-      //   name: "Payment Methods",
-      // },
-      // {
-      //   url: "https://giki.edu.pk/transfer-from-other-universities/",
-      //   name: "Transfer from other Universities",
-      // },
-      // {
-      //   url: "https://www.facebook.com/OfficialGIKI/",
-      //   name: "Digital Media Link",
-      // },
-      // {
-      //   url: "https://giki.edu.pk/contact-us/",
-      //   name: "Contact Details",
-      // },
+      {
+        url: "https://giki.edu.pk/admissions/admissions-undergraduates/eligibility-criteria/ ",
+        name: "Eligibility and Assessment Criteria",
+      },
+      {
+        url: "https://giki.edu.pk/admissions/admissions-undergraduates/undergraduate-admission-test-syllabus/  ",
+        name: "Undergraduate Admission Test Syllabus",
+      },
+      {
+        url: "https://giki.edu.pk/admissions/admissions-undergraduates/ugradhow-to-apply/  ",
+        name: "Application Procedure (How to Apply)",
+      },
+      {
+        url: "https://giki.edu.pk/admissions/admissions-undergraduates/ugrad-fees-and-expenses/  ",
+        name: "Fees and Expenses",
+      },
+      {
+        url: "https://giki.edu.pk/payment/",
+        name: "Payment Methods",
+      },
+      {
+        url: "https://giki.edu.pk/transfer-from-other-universities/",
+        name: "Transfer from other Universities",
+      },
+      {
+        url: "https://www.facebook.com/OfficialGIKI/",
+        name: "Digital Media Link",
+      },
+      {
+        url: "https://giki.edu.pk/contact-us/",
+        name: "Contact Details",
+      },
     ];
 
     const pages = [];

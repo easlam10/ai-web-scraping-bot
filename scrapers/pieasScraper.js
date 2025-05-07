@@ -27,30 +27,30 @@ async function scrapPieas() {
     
     
       const pieasUrls =  [
-        // {
-        //   url: "https://admissions.pieas.edu.pk/Admissions/BS.html",
-        //   name: "Undergraduate programs",
-        // },
-        // {
-        //   url: "https://admissions.pieas.edu.pk/Academic_Rules/academic_rules.html",
-        //   name: "Rules and Policies",
-        // },
+        {
+          url: "https://admissions.pieas.edu.pk/Admissions/BS.html",
+          name: "Undergraduate programs",
+        },
+        {
+          url: "https://admissions.pieas.edu.pk/Academic_Rules/academic_rules.html",
+          name: "Rules and Policies",
+        },
         {
           url: "https://admissions.pieas.edu.pk/Admissions/schedule.html",
           name: "BS Admissions (2025-2029)",
         },
-        // {
-        //   url: "https://admissions.pieas.edu.pk/Academic_Rules/fee_structure.html",
-        //   name: "Fee Structure",
-        // },
-        // {
-        //   url: "https://www.facebook.com/PIEAS.official.pk/ ",
-        //   name: "Digital Media Link",
-        // },
-        // {
-        //   url: "https://www.pieas.edu.pk/contactusvone.cshtml  ",
-        //   name: "Contact Details",
-        // },
+        {
+          url: "https://admissions.pieas.edu.pk/Academic_Rules/fee_structure.html",
+          name: "Fee Structure",
+        },
+        {
+          url: "https://www.facebook.com/PIEAS.official.pk/ ",
+          name: "Digital Media Link",
+        },
+        {
+          url: "https://www.pieas.edu.pk/contactusvone.cshtml  ",
+          name: "Contact Details",
+        },
       ]
 
     const pages = [];
@@ -77,7 +77,7 @@ async function scrapPieas() {
       dynamicData.classesCommencementDate = dates.joiningDate
     }
 
-    console.log(dynamicData)
+
 
     if (dynamicData.thirdTestRegisteration) {
       messages.push(pieasMessages.thirdTestDeadline({

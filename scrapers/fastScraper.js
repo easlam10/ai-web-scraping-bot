@@ -90,7 +90,6 @@ async function scrapFast() {
       
     }
 
-    console.log(dynamicData)
 
     if (dynamicData.applicationDates) {
       messages.push(
