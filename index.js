@@ -8,18 +8,13 @@ const scrapGiki = require("./scrapers/gikiScraper");
 
 
 async function runScrapers() {
-  try {
+  
     console.log('Starting scrapers...');
     // await scrapNust();
     // await scrapNums();
     // await scrapPieas();
     await scrapGiki();
     // await scrapFast();
-    console.log('All scrapers completed successfully');
-  } catch (error) {
-    console.error('Scraper failed:', error);
-    
-  }
 }
   runScrapers();
 
