@@ -83,25 +83,36 @@ async function scrapGiki() {
 
       const dates = extractDatesFromGikiStructuredContent(structuredData);
 
-      // Store the dates in dynamicData if needed
-      dynamicData.applicationDates = dates.applicationDates;
-      dynamicData.financialAidDeadline = dates.financialAidDeadline;
-      dynamicData.admissionTestDates = dates.admissionTestDates;
-      dynamicData.meritListDate = dates.meritListDate;
-      dynamicData.orientationAndCommencementDate = dates.orientationDates;
-
-      
+      if (dates.applicationDates?.startDate && dates.applicationDates?.deadlineDate) {
+        dynamicData.applicationDates = dates.applicationDates;
+      }
+      if (dates.financialAidDeadline) {
+        dynamicData.financialAidDeadline = dates.financialAidDeadline;
+      }
+      if (dates.admissionTestDates?.testDate && dates.admissionTestDates?.resultDate) {
+        dynamicData.admissionTestDates = dates.admissionTestDates;
+      }
+      if (dates.meritListDate) {
+        dynamicData.meritListDate = dates.meritListDate;
+      }
+      if (dates.orientationDates?.orientationDate && dates.orientationDates?.commencementDate) {
+        dynamicData.orientationAndCommencementDate = dates.orientationDates;
+      }
     }
+
+    console.log(dynamicData);
 
     if (dynamicData.applicationDates) {
       messages.push(
         gikiMessages.applicationSchedule({
-          startingDate: dynamicData.applicationDates.startDate || "To be announced",
-          deadline: dynamicData.applicationDates.deadlineDate || "To be announced",
+          startingDate:
+            dynamicData.applicationDates.startDate || "To be announced",
+          deadline:
+            dynamicData.applicationDates.deadlineDate || "To be announced",
         })
       );
     }
-    
+
     if (dynamicData.financialAidDeadline) {
       messages.push(
         gikiMessages.financialAidDeadline({
@@ -109,16 +120,18 @@ async function scrapGiki() {
         })
       );
     }
-    
+
     if (dynamicData.admissionTestDates) {
       messages.push(
         gikiMessages.admissionTest({
-          testDate: dynamicData.admissionTestDates.testDate || "To be announced",
-          resultDate: dynamicData.admissionTestDates.resultDate || "To be announced",
+          testDate:
+            dynamicData.admissionTestDates.testDate || "To be announced",
+          resultDate:
+            dynamicData.admissionTestDates.resultDate || "To be announced",
         })
       );
     }
-    
+
     if (dynamicData.meritListDate) {
       messages.push(
         gikiMessages.meritList({
@@ -126,34 +139,29 @@ async function scrapGiki() {
         })
       );
     }
-    
+
     if (dynamicData.orientationAndCommencementDate) {
       messages.push(
         gikiMessages.classesCommencement({
-          orientationDate: 
-            dynamicData.orientationAndCommencementDate.orientationDate || "To be announced",
-          classesCommencementDate: 
-            dynamicData.orientationAndCommencementDate.commencementDate || "To be announced",
+          orientationDate:
+            dynamicData.orientationAndCommencementDate.orientationDate ||
+            "To be announced",
+          classesCommencementDate:
+            dynamicData.orientationAndCommencementDate.commencementDate ||
+            "To be announced",
         })
       );
     }
 
-    
     messages.push(gikiMessages.eligibiltyCriteria());
 
-  
     messages.push(gikiMessages.testSyllabus());
-
 
     messages.push(gikiMessages.applicationPaymentMethod());
 
-   
     messages.push(gikiMessages.transferDetails());
 
-    console.log(messages)
-
-
-
+    console.log(messages);
 
     const fileName = path.join(
       outputsDir,
@@ -177,11 +185,11 @@ async function scrapGiki() {
     // const imageUrl = await uploadFile(finalImagePath);
     // console.log(`📤 Logo image uploaded to Dropbox: ${imageUrl}`);
 
-       // Send messages one-by-one on WhatsApp
-       for (const [i, msg] of messages.entries()) {
-        console.log(`📨 Sending message ${i + 1}...`);
-        await sendWhatsAppWithMedia(msg);
-      }
+    // Send messages one-by-one on WhatsApp
+    //  for (const [i, msg] of messages.entries()) {
+    //   console.log(`📨 Sending message ${i + 1}...`);
+    //   await sendWhatsAppWithMedia(msg);
+    // }
   } catch (error) {
     console.error("❌ Process failed:", error);
     if (error.code === "ENOENT") {

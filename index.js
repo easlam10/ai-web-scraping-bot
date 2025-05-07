@@ -2,8 +2,8 @@
 // const scrapNust = require("./scrapers/nustScraper");
 // const scrapNums = require("./scrapers/numsScraper");
 // const scrapPieas = require("./scrapers/pieasScraper");
-const scrapGiki = require("./scrapers/gikiScraper");
-// const scrapFast = require("./scrapers/fastScraper");
+// const scrapGiki = require("./scrapers/gikiScraper");
+const scrapFast = require("./scrapers/fastScraper");
 
 
 
@@ -13,8 +13,8 @@ async function runScrapers() {
     // await scrapNust();
     // await scrapNums();
     // await scrapPieas();
-    await scrapGiki();
-    // await scrapFast();
+    // await scrapGiki();
+    await scrapFast();
 }
   runScrapers();
 

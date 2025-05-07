@@ -116,6 +116,8 @@ async function scrapNust() {
 
     }
 
+    console.log(dynamicData)
+
 
     // 1. Dynamic - NET Admission Schedule
     if (dynamicData.netDates) {
@@ -200,12 +202,12 @@ async function scrapNust() {
   
 
     // // Send messages one-by-one on WhatsApp
-     for (const [i, msg] of messages.entries()) {
-      console.log(`📨 Sending message ${i + 1}...`);
-      await sendWhatsAppWithMedia(msg);
-    }
+    //  for (const [i, msg] of messages.entries()) {
+    //   console.log(`📨 Sending message ${i + 1}...`);
+    //   await sendWhatsAppWithMedia(msg);
+    // }
 
-    console.log("🚀 All messages sent successfully!");
+    // console.log("🚀 All messages sent successfully!");
   } catch (error) {
     console.error("❌ Process failed:", error);
     if (error.code === "ENOENT") {

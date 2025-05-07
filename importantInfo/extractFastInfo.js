@@ -24,21 +24,25 @@ function extractDatesFromFastStructuredContent(structuredData) {
   
     return result;
   }
+
+  function isProbablyDate(text) {
+    // Check if it contains month names or digits with separators (basic heuristic)
+    return /(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|\d{1,2}[-/]\d{1,2}[-/]\d{2,4})/i.test(text);
+  }
   
   // Helper to map FAST labels to result fields
   function extractFastUndergradDate(label, value, result) {
+    if (!isProbablyDate(value)) return; // Skip non-date values
     if (label.includes("application submission")) {
       result.applicationDates = value;
-    } else if (label.includes("admission test")) {
+    } else if (label.includes("admission tests")) {
       result.admissionTestDate = value;
     } else if (label.includes("merit list")) {
       result.meritListDate = value;
     } else if (label.includes("admission formalities")) {
       result.admissionFormalitiesDate = value;
     } else if (
-      label.includes("commencement of classes") ||
-      label.includes("classes start") ||
-      label.includes("classes begin")
+      label.includes("commencement of classes")
     ) {
       result.classesCommencementDate = value;
     }

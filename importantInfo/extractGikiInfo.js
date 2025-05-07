@@ -66,7 +66,7 @@ function extractDatesFromLabelValuePair(label, value, result) {
   }
 
   // Admission test dates
-  if (label.includes('admission test') || label.includes('test date')) {
+  if (label.includes('admission test')) {
     result.admissionTestDates = result.admissionTestDates || {};
     result.admissionTestDates.testDate = value;
   } else if (label.includes('result announcement') || label.includes('result date')) {
