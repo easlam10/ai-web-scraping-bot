@@ -146,6 +146,8 @@ async function scrapFast() {
    
     messages.push(fastMessages.howToApply());
 
+    console.log(messages)
+
   
 
     const fileName = path.join(
@@ -156,8 +158,8 @@ async function scrapFast() {
     console.log(`✅ Excel file saved: ${fileName}`);
     // Upload to Dropbox
 
-    const fileUrl = await uploadFile(fileName);
-    console.log(`📤 File uploaded to Dropbox: ${fileUrl}`);
+    // const fileUrl = await uploadFile(fileName);
+    // console.log(`📤 File uploaded to Dropbox: ${fileUrl}`);
 
     // // Prepare image URL (use your Dropbox link with raw=1)
     // const bannerPath = path.join(publicDir, 'images', 'nust_banner.jpg');

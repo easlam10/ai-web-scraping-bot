@@ -15,6 +15,7 @@ async function runScrapers() {
     // await scrapPieas();
     // await scrapGiki();
     await scrapFast();
+    console.log("✅ GitHub Action script ran successfully at", new Date().toISOString());
     console.log('All scrapers completed successfully');
   } catch (error) {
     console.error('Scraper failed:', error);
