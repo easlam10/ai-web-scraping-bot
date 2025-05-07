@@ -94,7 +94,7 @@ async function scrapNust() {
       netSeries: null,
     };
 
-    // First pass: Scrape all pages and extract dynamic data
+
     for (const { url, name } of nustUrls) {
       console.log(`🌐 Scraping: ${url}`);
       const html = await fetchPageContent(url);
@@ -158,19 +158,19 @@ async function scrapNust() {
       );
     }
 
-    // 5. Static - Academic Qualification
+
     messages.push(nustMessages.academicQualification());
 
-    // 6. Static - Admission Procedure
+
     messages.push(nustMessages.admissionProcedure());
 
-    // 7. Static - Programmes Commencement
+
     messages.push(nustMessages.programmesCommencement());
 
-    // 8. Static - NET Weightage
+
     messages.push(nustMessages.netWeightage());
 
-    // 9. Static - Merit Criteria
+
     messages.push(nustMessages.meritCriteria());
 
     console.log(messages)
