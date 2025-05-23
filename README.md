@@ -69,7 +69,141 @@ AI-WEB-SCRAPING-BOT/
 ├── .env.example             # Environment template
 ├── index.js                 # Main entry point
 └── package.json             # Project metadata
+
+
 ```
+
+📦 Environment Configuration
+Create a .env file based on .env.example:
+
+ini
+Copy
+Edit
+# Twilio Configuration
+TWILIO_ACCOUNT_SID=your_account_sid
+TWILIO_AUTH_TOKEN=your_auth_token
+TWILIO_WHATSAPP_NUMBER=whatsapp:+14155238886
+RECIPIENT_WHATSAPP_NUMBER=whatsapp:+923000000000
+
+# WhatsApp Meta Configuration
+WHATSAPP_TOKEN=your_meta_token
+WHATSAPP_PHONE_NUMBER_ID=your_meta_number_id
+WHATSAPP_RECIPIENT_NUMBER=923000000000
+
+# Dropbox Configuration
+DROPBOX_ACCESS_TOKEN=your_dropbox_token
+DROPBOX_REFRESH_TOKEN=your_refresh_token
+
+# AI Configuration
+GEMINI_API_KEY=your_gemini_key
+⚠️ Security Note:
+
+Never commit .env files to version control.
+
+Share credentials via secure channels (e.g., 1Password, LastPass, or encrypted email).
+
+Rotate all tokens before handing over the project.
+
+🚀 Running the System
+▶️ Manual Execution
+bash
+Copy
+Edit
+node index.js
+⏰ Scheduled Execution (CRON)
+bash
+Copy
+Edit
+npm install -g pm2
+pm2 start index.js --cron "0 9 * * *"  # Runs daily at 9 AM
+pm2 save
+pm2 startup
+🤖 How It Works
+🔗 URL Processing
+Each university has a dedicated URLs array.
+
+Example: nustUrls in nustScraper.js.
+
+🧠 Content Extraction
+javascript
+Copy
+Edit
+const html = await fetchPageContent(url);
+const structuredData = extractNustStructuredContent(html);
+📊 Data Analysis
+Uses Cheerio-parsed content.
+
+Extracts deadlines, programs, and more via extractNustInfo.js.
+
+💬 Message Generation
+javascript
+Copy
+Edit
+messages.push(nustMessages.netAdmissionSchedule({
+  deadline: "2024-05-15",
+  examStartDate: "2024-06-01"
+}));
+🧾 Output Generation
+Excel reports with raw data.
+
+Branded images with institutional logos.
+
+📤 Distribution
+WhatsApp messages via Twilio/Meta.
+
+Cloud storage via Dropbox.
+
+🔐 Security Considerations
+📁 Environment Variables
+All sensitive keys are stored in .env.
+
+config/keys.js serves as a centralized access point.
+
+🔒 Secure Sharing
+Use Vault by HashiCorp for enterprise teams.
+
+Consider Infisical for an open-source alternative.
+
+🔁 Token Rotation
+bash
+Copy
+Edit
+# Sample rotation steps:
+# 1. Generate a new Dropbox token
+# 2. Update .env
+# 3. Restart the application
+📈 Monitoring & Maintenance
+📋 Logging
+All operations include emoji-enhanced logs:
+
+🌐 Scraping initiated
+
+✅ Success
+
+❌ Errors
+
+🛠 Error Handling
+Automatic retries for failed scrapes.
+
+Fallback to structured data when AI fails.
+
+Graceful degradation for partial university failures.
+
+🔄 Maintenance Tasks
+🧭 URL Updates
+Review and update university URLs quarterly.
+
+Located in respective scrapers/ files.
+
+📝 Template Updates
+Modify WhatsApp message formats in messageTemplates/.
+
+🧰 Dependency Updates
+bash
+Copy
+Edit
+npm outdated
+npm update
 
 
 ## 🚀 Deployment & Hosting
