@@ -72,38 +72,11 @@ AI-WEB-SCRAPING-BOT/
 
 🚦 Deployment
 Hosting on Railway
-bash
+
 1. Connect GitHub repository to Railway
 2. Set environment variables in Railway dashboard
 3. Configure automated deployments
 4. Set weekly cron job (Monday 12:00 PM PKT)
-Environment Configuration
-Create .env file from template:
-
-ini
-# Twilio Configuration
-TWILIO_ACCOUNT_SID=your_account_sid
-TWILIO_AUTH_TOKEN=your_auth_token
-TWILIO_WHATSAPP_NUMBER=whatsapp:+14155238886
-RECIPIENT_WHATSAPP_NUMBER=whatsapp:+923000000000
-
-# WhatsApp Meta
-WHATSAPP_TOKEN=your_meta_token
-WHATSAPP_PHONE_NUMBER_ID=your_meta_number_id
-
-# Dropbox
-DROPBOX_ACCESS_TOKEN=your_dropbox_token
-DROPBOX_REFRESH_TOKEN=your_refresh_token
-
-# AI Services
-GEMINI_API_KEY=your_gemini_key
-🔒 Security Notice
-
-Never commit .env to version control
-
-Share credentials via 1Password/Vault
-
-Rotate tokens before production use
 
 
 
