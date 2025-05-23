@@ -1,14 +1,17 @@
 const { extractNustStructuredContent } = require("../extraction/extractNust");
 const nustMessages = require("../messageTemplates/nustMessages");
-const { sendWhatsAppWithMedia } = require("../services/twilioService");
+const { sendWhatsAppTwilio } = require("../services/twilioService");
+const { sendWhatsAppMessage } = require("../services/whatsappService");
 const uploadFile = require("../services/dropboxService");
 const addLogoToImage = require("../services/addLogoToImage");
 const { writeToExcel } = require("../services/excelWriter");
 const { fetchPageContent } = require("../services/fetchPageContent");
+const { generateMessagesFromContent } = require("../services/aiService");
 const {
   extractLatestNetDeadlineAndExamDate,
   extractMathCourseDateForFscPreMed,
   extractAllNetRegistrationRanges,
+  extractActSatDates,
 } = require("../importantInfo/extractNustInfo");
 const path = require("path");
 const fs = require("fs");
@@ -86,14 +89,15 @@ async function scrapNust() {
         name: "Contact Details",
       },
     ];
+
     const pages = [];
-    let messages = [];
+    const messages = [];
     let dynamicData = {
       netDates: null,
       mathDeadline: null,
       netSeries: null,
+      actSatDates: null,
     };
-
 
     for (const { url, name } of nustUrls) {
       console.log(`🌐 Scraping: ${url}`);
@@ -101,35 +105,40 @@ async function scrapNust() {
       const structuredData = extractNustStructuredContent(html);
       pages.push({ name, structuredData });
 
-      // Extract dynamic data from each page with fallbacks
-      const netData = extractLatestNetDeadlineAndExamDate(html);
-      const mathData = extractMathCourseDateForFscPreMed(html);
-      const netSeriesData = extractAllNetRegistrationRanges(html);
+    // Extract dynamic data from each page with fallbacks
+          const netData = extractLatestNetDeadlineAndExamDate(html);
+          const mathData = extractMathCourseDateForFscPreMed(html);
+          const netSeriesData = extractAllNetRegistrationRanges(html);
+          const actSatData = extractActSatDates(structuredData);
 
-      
-      // Add this in your scrapNust function
+     if (netData?.deadline && netData?.examStartDate && netData?.series)
+        dynamicData.netDates = dynamicData.netDates || netData;
 
-      // Only overwrite null values with new findings
-      dynamicData.netDates = dynamicData.netDates || netData;
-      dynamicData.mathDeadline = dynamicData.mathDeadline || mathData;
-      dynamicData.netSeries = dynamicData.netSeries || netSeriesData;
+      if (mathData) dynamicData.mathDeadline = dynamicData.mathDeadline || mathData;
 
+      if (netSeriesData) dynamicData.netSeries = dynamicData.netSeries || netSeriesData;
+
+    if (
+      (!dynamicData.actSatDates?.registrationWindow && actSatData.registrationWindow) ||
+      (!dynamicData.actSatDates?.scoreDeadline && actSatData.scoreDeadline)
+    ) {
+      dynamicData.actSatDates = actSatData;
     }
+ 
 
-    console.log(dynamicData)
-
+  }
 
     // 1. Dynamic - NET Admission Schedule
     if (dynamicData.netDates) {
       messages.push(
         nustMessages.netAdmissionSchedule({
-          deadline: dynamicData.netDates.deadline || "To be announced",
+          deadline: dynamicData.netDates.deadline,
           examStartDate:
-            dynamicData.netDates.examStartDate || "To be announced",
-          series: dynamicData.netDates.series || "2025",
+            dynamicData.netDates.examStartDate,
+          series: dynamicData.netDates.series,
         })
       );
-    } 
+    }
 
     // 2. Dynamic - Math Course Info
     if (dynamicData.mathDeadline) {
@@ -146,9 +155,8 @@ async function scrapNust() {
       );
     }
 
-  messages.push(nustMessages.newProgrammes());
+    messages.push(nustMessages.newProgrammes());
 
-    // 3. Update message generation for NET series
     if (dynamicData.netSeries) {
       messages.push(
         nustMessages.multiEntryTestSchedule({
@@ -160,22 +168,24 @@ async function scrapNust() {
       );
     }
 
-
     messages.push(nustMessages.academicQualification());
-
 
     messages.push(nustMessages.admissionProcedure());
 
-
     messages.push(nustMessages.programmesCommencement());
 
+    messages.push(
+      nustMessages.actSatApplications({
+        registrationWindow:
+          dynamicData.actSatDates.registrationWindow,
+        scoreDeadline:
+          dynamicData.actSatDates.scoreDeadline,
+      })
+    );
 
-    messages.push(nustMessages.netWeightage());
+    messages.push(nustMessages.netWeightageInfo());
 
-
-    messages.push(nustMessages.meritCriteria());
-
-    console.log(messages)
+    messages.push(nustMessages.candidateSelection());
 
     const fileName = path.join(
       outputsDir,
@@ -183,31 +193,29 @@ async function scrapNust() {
     );
     await writeToExcel(pages, fileName);
     console.log(`✅ Excel file saved: ${fileName}`);
-    // // Upload to Dropbox
+    // Upload to Dropbox
 
-    // // const fileUrl = await uploadFile(fileName);
-    // // console.log(`📤 File uploaded to Dropbox: ${fileUrl}`);
+    const fileUrl = await uploadFile(fileName);
+    console.log(`📤 File uploaded to Dropbox: ${fileUrl}`);
 
-    // // Prepare image URL (use your Dropbox link with raw=1)
-    // const bannerPath = path.join(publicDir, 'images', 'nust_banner.jpg');
-    // const logoPath = path.join(publicDir, 'images', 'logo.png');
-    // const finalImagePath = path.join(outputsDir, 'nust_banner_with_logo.jpg');
-    // // ✅ Generate image with logo
-    // await addLogoToImage(bannerPath, logoPath, finalImagePath);
+    // Prepare image URL (use your Dropbox link)
+    const bannerPath = path.join(publicDir, 'images', 'nust_banner.jpg');
+    const logoPath = path.join(publicDir, 'images', 'logo.png');
+    const finalImagePath = path.join(outputsDir, 'nust_banner_with_logo.jpg');
+    // ✅ Generate image with logo
+    await addLogoToImage(bannerPath, logoPath, finalImagePath);
 
-    // // ✅ Upload image to Dropbox
-    // const imageUrl = await uploadFile(finalImagePath);
-    // console.log(`📤 Logo image uploaded to Dropbox: ${imageUrl}`);
+    // ✅ Upload image to Dropbox
+    const imageUrl = await uploadFile(finalImagePath);
+    console.log(`📤 Logo image uploaded to Dropbox: ${imageUrl}`);
 
-  
+    // Send messages one-by-one on WhatsApp
+    for (const [i, msg] of messages.entries()) {
+      console.log(`📨 Sending message ${i + 1}...`);
+      await sendWhatsAppTwilio(msg);
+    }
 
-    // // Send messages one-by-one on WhatsApp
-    //  for (const [i, msg] of messages.entries()) {
-    //   console.log(`📨 Sending message ${i + 1}...`);
-    //   await sendWhatsAppWithMedia(msg);
-    // }
-
-    // console.log("🚀 All messages sent successfully!");
+    console.log("🚀 All messages sent successfully!");
   } catch (error) {
     console.error("❌ Process failed:", error);
     if (error.code === "ENOENT") {

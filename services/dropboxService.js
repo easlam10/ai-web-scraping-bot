@@ -1,12 +1,16 @@
 const { Dropbox } = require('dropbox');
 const fs = require('fs');
 const path = require('path');
+const fetch = require('node-fetch'); // Required for refresh to work
 const config = require('../config/keys');
 
 
 // Initialize with full permissions
 const dbx = new Dropbox({
-  accessToken: config.dropbox.accessToken
+  clientId: config.dropbox.appKey,
+  clientSecret: config.dropbox.appSecret,
+  refreshToken: config.dropbox.refreshToken,
+  fetch
 });
 
 async function uploadFile(filePath) {

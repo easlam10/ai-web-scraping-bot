@@ -49,10 +49,60 @@ function extractAllNetRegistrationRanges(html) {
 
   return results.length ? results : null;
 }
+function extractActSatDates(structuredData) {
+  let registrationWindow = null;
+  let scoreDeadline = null;
+
+  for (let i = 0; i < structuredData.length; i++) {
+    const block = structuredData[i];
+
+    if (
+      block.type === "heading" &&
+      /ACT\s*\/\s*SAT Basis Applications/i.test(block.text)
+    ) {
+      // Look ahead for a nearby table
+      for (let j = i + 1; j < structuredData.length; j++) {
+        const nextBlock = structuredData[j];
+        if (nextBlock.type === "table") {
+          const rows = nextBlock.data;
+          for (const row of rows) {
+            const [col1, col2] = row.map((cell) => cell.value);
+
+            if (/registration/i.test(col1)) {
+              registrationWindow = col1.match(/\d{1,2}\s\w+\s–\s\d{1,2}\s\w+\s2025/i)?.[0] || null;
+            }
+
+            if (/scores?|last date/i.test(col2)) {
+              scoreDeadline = col2.match(/\d{1,2}\s\w+\s2025/i)?.[0] || null;
+            }
+
+            // Also handle case where date strings are in table body
+            if (!registrationWindow && /\d{1,2}\s\w+\s–\s\d{1,2}\s\w+\s2025/i.test(col1)) {
+              registrationWindow = col1.match(/\d{1,2}\s\w+\s–\s\d{1,2}\s\w+\s2025/i)[0];
+            }
+            if (!scoreDeadline && /\d{1,2}\s\w+\s2025/i.test(col2)) {
+              scoreDeadline = col2.match(/\d{1,2}\s\w+\s2025/i)[0];
+            }
+          }
+          break;
+        }
+      }
+    }
+  }
+
+  return {
+    registrationWindow,
+    scoreDeadline,
+  };
+}
+
+
+
 
 
 module.exports = {
   extractLatestNetDeadlineAndExamDate,
   extractMathCourseDateForFscPreMed,
-  extractAllNetRegistrationRanges
+  extractAllNetRegistrationRanges,
+  extractActSatDates,
 };

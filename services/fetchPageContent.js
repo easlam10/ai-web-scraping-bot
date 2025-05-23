@@ -6,7 +6,8 @@ puppeteer.use(StealthPlugin());
 async function fetchPageContent(url) {
   const browser = await puppeteer.launch({
     headless: "new",
-    args: ['--no-sandbox', '--disable-setuid-sandbox'], // required for cloud deployment
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    ignoreHTTPSErrors: true// required for cloud deployment
   });
 
   const page = await browser.newPage();

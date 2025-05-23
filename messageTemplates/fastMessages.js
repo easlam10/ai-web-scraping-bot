@@ -17,7 +17,7 @@ ${WHATSAPP_CHANNEL_LINK}
 📋 *FAST, Lahore*
 \`Admissions Formalities\` 
 
-FAST has announced the dates for admission formalities in 2025. 
+Students applying for FAST in 2025 must complete their admission before:
 
  *Date:* ${dates}
 
@@ -41,7 +41,7 @@ ${WHATSAPP_CHANNEL_LINK}
 🏅 *FAST, Lahore*
 \`Merit List Announcement\` 
 
-FAST has announced the date for the release of merit list for admissions in 2025.
+FAST has announced the date for the release of merit list for undergraduate admissions in 2025.
 
 *Merit List Date:* ${meritListDate}
 
@@ -53,7 +53,7 @@ ${WHATSAPP_CHANNEL_LINK}
 🎓 *FAST, Lahore*
 \`Date of Joining\` 
 
-FAST has announced the dates for classes commencement in 2025.
+FAST has announced the dates for commencement of classes in 2025.
 
 📆 *Commencement of Classes:* ${classesCommencementDate}
 
@@ -61,49 +61,79 @@ FAST has announced the dates for classes commencement in 2025.
 ${WHATSAPP_CHANNEL_LINK}
 `,
 
-  eligibiltyCriteria: () => `
-📚 *FAST, Lahore*
-\`Eligibility Criteria\` 
+eligibiltyCriteria: () => `
+📚 *FAST, Lahore*  
+\`Eligibility Criteria 2025\`  
 
-FAST has announced its eligibility criteria for undergraduate admissions in 2025.
- *For Details:* https://nu.edu.pk/Admissions/EligibilityCriteria
+FAST has shared itseligibility & selection criteria for undergraduate admissions in 2025*.
 
-\`Tap to Join, Share & Shine\`
+*Key Weightage Highlights:*
+
+🛠 *Engineering Programs:*  
+📊 Admission Test: *33%* 
+📚 HSSC / Equivalent: *50%* 
+📄 SSC / Matric: *17%*  
+
+💻 *Computing Programs:*  
+📊 Admission Test: *50%*  
+📚 HSSC / Equivalent: *40%* 
+📄 SSC / Matric: *10%*  
+
+📈 *Business Programs :  
+📊 Admission Test: *50%* 
+📚 HSSC / Equivalent: *40%*  
+📄 SSC / Matric: *10%* 
+
+*Admission Tests Accepted:* FAST-NUCES / SAT / NTS NAT (specific types only).  
+*Minimum Marks:* Generally *60%* in SSC, *50-60%* in HSSC depending on program.  
+
+For Full Details: https://nu.edu.pk/Admissions/EligibilityCriteria  
+
+\`Tap to Join, Share & Shine\`  
 ${WHATSAPP_CHANNEL_LINK}
 `,
 
   testSyllabus: () => `
-📘 *FAST, Lahore*
-\`Test Pattern\`
+📘 *FAST, Lahore*  
+\`Admission Test Pattern 2025\`  
 
-FAST has released the test pattern for undergraduate admissions in 2025.
- *For Details:* https://nu.edu.pk/Admissions/TestPattern
+FAST has shared the admission test pattern for its undergraduate programs.
 
-\`Tap to Join, Share & Shine\`
+💼 *BBA, BS (Accounting & Finance, Business Analytics, FinTech):*  
+🔹 English: *10%*  
+🔹 Essay Writing: *15%*  
+🔹 Analytical Skills & IQ: *25%* 
+🔹 Basic Math: *50%*  
+
+💻 *BS (CS, Engineering Programs):*  
+🔹 English: *10%*  
+🔹 Analytical Skills & IQ: *20%*  
+🔹 Basic Math: *20%* 
+🔹 Advanced Math: *50%*  
+
+⚠️ *Note:*  
+➖ *Negative Marking applies.*  
+➖ *Calculators are NOT allowed.*  
+
+\`Tap to Join, Share & Shine\`  
 ${WHATSAPP_CHANNEL_LINK}
-`,
+`
+,
 
   programmesOffered: () => `
-📖 *FAST, Lahore*
-\`Programmes Offered\`
+📖 *FAST, Pakistan*  
+\`Undergraduate Programs Offered\`  
 
-FAST has released the list of programmes offered in all campuses for undergraduate admissions in 2025.
- *For Details:* https://nu.edu.pk/Degree-Programs
+FAST offers a diverse range of undergraduate programs across its campuses:  
+🏛 Chiniot-Faisalabad | Islamabad | Karachi | Lahore | Multan | Peshawar
 
-\`Tap to Join, Share & Shine\`
+
+📍 *Note:* Program availability varies by campus.  
+Check which campus offers which program here: https://nu.edu.pk/Degree-Programs  
+
+\`Tap to Join, Share & Shine\`  
 ${WHATSAPP_CHANNEL_LINK}
-`,
-
-  howToApply: () => `
-🛠️ *FAST, Lahore*
-\`How to Apply\`
-
-FAST has announced the procedure for undergraduate admissions in 2025.
- *For Details:* https://giki.edu.pk/transfer-from-other-universities/
-
-\`Tap to Join, Share & Shine\`
-${WHATSAPP_CHANNEL_LINK}
-`,
+`
 };
 
 module.exports = fastMessages;

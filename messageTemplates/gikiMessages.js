@@ -63,50 +63,118 @@ GIKI has announced the dates for classes commencement in 2025.
 \`Tap to Join, Share & Shine\`
 ${WHATSAPP_CHANNEL_LINK}
 `,
+meritCriteria: () => `
+📊 *GIKI, Topi.*
+\`GIKI Merit Criteria\`
 
-  eligibiltyCriteria: () => `
-📘 *GIKI, Swabi*
-\`Eligibility Criteria\` 
+GIKI has announced its merit generation criteria for undergraduate admissions in 2025:
+
+*Merit Breakdown:*
+
+- 📝 GIKI Admission Test: *85%*  
+- 📚 SSC / Matric / Equivalent: *15%*  
+- 📄 O-Levels (For students with A-Levels & O-Level background): *15%*  
+- 🎓 Last Completed Qualification (High School Diploma / IB Diploma / B.Sc. / DAE): *15%*
+
+*Note:*  
+Candidates awaiting results can apply provisionally. Final admission will be confirmed upon submission of results as per the offer letter and meeting the above criteria.
+
+\`Tap to Join, Share & Shine\`  
+${WHATSAPP_CHANNEL_LINK}
+`,
+
+eligibiltyCriteria: () => `
+📘 *GIKI, Swabi*  
+\`Eligibility Criteria\`
 
 GIKI has announced its eligibility criteria for undergraduate admissions in 2025.
- *For Details:* https://giki.edu.pk/admissions/admissions-undergraduates/eligibility-criteria/
 
-\`Tap to Join, Share & Shine\`
+*Key Highlights:*
+
+🔹 *For BS Engineering:*  
+HSSC (Pre-Engineering/ICS/Pre-Medical with Add. Math) with *60%+* in Math, Physics & Overall or equivalent A-Levels, IB, High School Diploma, or DAE.
+
+🔹 *For CS, AI, Data Science & related:*  
+HSSC with Math, Physics & any elective with *60%+* or equivalent.
+
+🔹 *For Management Sciences:*  
+HSSC (any stream) or A-Levels with *60%* overall or equivalent.
+
+*For Full Details:* https://giki.edu.pk/admissions/admissions-undergraduates/eligibility-criteria/
+
+\`Tap to Join, Share & Shine\`  
 ${WHATSAPP_CHANNEL_LINK}
 `,
 
-  testSyllabus: () => `
-📚 *GIKI, Swabi*
+testSyllabus: () => `
+📚 *GIKI, Swabi*  
 \`Test Syllabus\`
 
-GIKI has released the test syllabus for undergraduate admissions in 2025.
- *For Details:* https://giki.edu.pk/admissions/admissions-undergraduates/undergraduate-admission-test-syllabus/
+GIKI has two separate admission tests, each with a different syllabus:
 
-\`Tap to Join, Share & Shine\`
+🛠 *Engineering/Computing Exam:*  
+For Engineering, AI, CS, Cyber Security, Software Engineering & Data Science programs.
+
+📊 *Management Exam:*  
+For BS Management Science program.
+
+You can check the detailed syllabus for each exam at the link below.
+
+*For Full Syllabus Details:* https://giki.edu.pk/admissions/admissions-undergraduates/undergraduate-admission-test-syllabus/
+
+\`Tap to Join, Share & Shine\`  
 ${WHATSAPP_CHANNEL_LINK}
 `,
 
-  applicationPaymentMethod: () => `
-💳 *GIKI, Swabi*
+applicationPaymentMethod: () => `
+💳 *GIKI, Swabi*  
 \`Payment Details\`
 
-GIKI has released the payment details for undergraduate applications in 2025.
- *For Details:* https://giki.edu.pk/payment/
+GIKI has shared the payment methods for undergraduate applications in 2025.
 
-\`Tap to Join, Share & Shine\`
+💰 *Fee:* Rs. 3,500/- (Single Test), Rs. 5,000/- (Both Tests)  
+➕ Add Rs. 1,000/- if applying for Financial Assistance.
+
+*Payment Methods:*  
+1️⃣ HBL Branch: Print challan & pay at any HBL branch.  
+2️⃣ 1-Bill Top-Up (Any Bank / EasyPaisa / Online / ATM): Use challan number as bill number.  
+3️⃣ HBL Mobile App / Internet Banking / ATM: Select 'GIKI New Admission' under Education.
+
+🔗 *Challan/Admit Card:* Download from https://admissions.giki.edu.pk/
+
+📧 *After Payment:*  
+Email proof of payment (screenshot/receipt), admit card number & applicant name to *ug.payment@giki.edu.pk* (Use your registered email).
+
+💵 *For International Payments (USD):*  
+Use *IBAN:* **PK70HABB0019790000085901** (More details in the link below).
+
+*For Full Payment Details:* https://giki.edu.pk/payment/
+
+\`Tap to Join, Share & Shine\`  
 ${WHATSAPP_CHANNEL_LINK}
 `,
 
-  transferDetails: () => `
-🔁 *GIKI, Swabi*
-\`Transfer Details\`
+transferDetails: () => `
+🔁 *GIKI, Swabi*  
+\`Transfer Admissions\`
 
-GIKI has announced the procedure for applicants who wish to transfer from other universities.
- *For Details:* https://giki.edu.pk/transfer-from-other-universities/
+GIKI allows students to transfer from other PEC/HEC accredited universities.
 
-\`Tap to Join, Share & Shine\`
+✅ Must have completed 15+ transferable credits with minimum CGPA 2.5 (out of 4). 
+
+🏫 Must earn at least 70 credits at GIKI, including 6 credits of Senior Design Project to qualify for GIKI degree.
+
+📝 Passing GIKI Admission Test with equal or higher marks than the faculty’s merit is mandatory.
+
+ℹ️ Transfer acceptance is subject to seat availability & academic quality.
+
+*For Details & Application:* https://giki.edu.pk/transfer-from-other-universities/
+
+\`Tap to Join, Share & Shine\`  
 ${WHATSAPP_CHANNEL_LINK}
 `,
+
+
 };
 
 module.exports = gikiMessages;

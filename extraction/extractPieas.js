@@ -6,7 +6,7 @@ function extractPieasStructuredContent(html) {
 
   // Remove unwanted elements
   $(
-    'script, style, noscript, iframe, svg, link, a:not([href^="mailto:"]), footer, nav, form, [aria-label="Map"], .active, .categories widget, #call-to-action, .tg-languageslist, .tg-noticeboard, .gsc-orderby-label, .gsc-selected-option, .widget-head'
+    'script, style, noscript, iframe, svg, link, a:not([href^="mailto:"]), footer, nav, form, del, [aria-label="Map"], .active, .categories widget, #call-to-action, .tg-languageslist, .tg-noticeboard, .gsc-orderby-label, .gsc-selected-option, .widget-head'
   ).remove();
 
   $("body")
@@ -47,23 +47,23 @@ function extractPieasStructuredContent(html) {
 
       let text = $element.text().trim();
 
-      if (tag === 'address') {
+      if (tag === "address") {
         content.push({
           type: "paragraph",
           text: text,
           element: $element,
-          style: "address" // Add custom style identifier
+          style: "address", // Add custom style identifier
         });
         return;
       }
-  
+
       // Handle italic elements (i tags)
-      if (tag === 'i') {
+      if (tag === "i") {
         content.push({
           type: "text",
           text: text,
           element: $element,
-          style: "italic" // Add italic style identifier
+          style: "italic", // Add italic style identifier
         });
         return;
       }

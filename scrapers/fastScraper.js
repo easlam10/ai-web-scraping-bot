@@ -2,9 +2,11 @@ const { extractFastStructuredContent } = require("../extraction/extractFast");
 const {
   extractDatesFromFastStructuredContent,
 } = require("../importantInfo/extractFastInfo");
-const { sendWhatsAppWithMedia } = require("../services/twilioService");
+const { sendWhatsAppTwilio } = require("../services/twilioService");
 const uploadFile = require("../services/dropboxService");
 const addLogoToImage = require("../services/addLogoToImage");
+const { sendWhatsAppMessage } = require("../services/whatsappService");
+const { generateMessagesFromContent } = require("../services/aiService");
 const { writeToExcel } = require("../services/excelWriter");
 const { fetchPageContent } = require("../services/fetchPageContent");
 const path = require("path");
@@ -96,7 +98,7 @@ async function scrapFast() {
       }
     }
 
-    console.log(dynamicData);
+    console.log(dynamicData)
 
     if (dynamicData.applicationDates) {
       messages.push(
@@ -146,9 +148,6 @@ async function scrapFast() {
 
     messages.push(fastMessages.programmesOffered());
 
-    messages.push(fastMessages.howToApply());
-
-    console.log(messages)
 
     const fileName = path.join(
       outputsDir,
@@ -158,24 +157,24 @@ async function scrapFast() {
     console.log(`✅ Excel file saved: ${fileName}`);
     // Upload to Dropbox
 
-    // const fileUrl = await uploadFile(fileName);
-    // console.log(`📤 File uploaded to Dropbox: ${fileUrl}`);
+    const fileUrl = await uploadFile(fileName);
+    console.log(`📤 File uploaded to Dropbox: ${fileUrl}`);
 
-    // // Prepare image URL (use your Dropbox link with raw=1)
-    // const bannerPath = path.join(publicDir, 'images', 'nust_banner.jpg');
-    // const logoPath = path.join(publicDir, 'images', 'logo.png');
-    // const finalImagePath = path.join(outputsDir, 'nust_banner_with_logo.jpg');
-    // // ✅ Generate image with logo
-    // await addLogoToImage(bannerPath, logoPath, finalImagePath);
+    // Prepare image URL (use your Dropbox link with raw=1)
+    const bannerPath = path.join(publicDir, 'images', 'nust_banner.jpg');
+    const logoPath = path.join(publicDir, 'images', 'logo.png');
+    const finalImagePath = path.join(outputsDir, 'nust_banner_with_logo.jpg');
+    // ✅ Generate image with logo
+    await addLogoToImage(bannerPath, logoPath, finalImagePath);
 
-    // // ✅ Upload image to Dropbox
-    // const imageUrl = await uploadFile(finalImagePath);
-    // console.log(`📤 Logo image uploaded to Dropbox: ${imageUrl}`);
+    // ✅ Upload image to Dropbox
+    const imageUrl = await uploadFile(finalImagePath);
+    console.log(`📤 Logo image uploaded to Dropbox: ${imageUrl}`);
 
     // Send messages one-by-one on WhatsApp
     for (const [i, msg] of messages.entries()) {
       console.log(`📨 Sending message ${i + 1}...`);
-      await sendWhatsAppWithMedia(msg);
+      await sendWhatsAppTwilio(msg);
     }
   } catch (error) {
     console.error("❌ Process failed:", error);

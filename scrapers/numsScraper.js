@@ -137,6 +137,9 @@ async function scrapNums() {
       }
     }
 
+    
+    
+
     const fileName = path.join(
         outputsDir,
       `Nums_admissions_${Date.now()}.xlsx`
@@ -145,31 +148,31 @@ async function scrapNums() {
     console.log(`✅ Excel file saved: ${fileName}`);
     // Upload to Dropbox
 
-    // const fileUrl = await uploadFile(fileName);
-    // console.log(`📤 File uploaded to Dropbox: ${fileUrl}`);
+    const fileUrl = await uploadFile(fileName);
+    console.log(`📤 File uploaded to Dropbox: ${fileUrl}`);
 
-    // // Prepare image URL (use your Dropbox link with raw=1)
-    // const bannerPath = path.join(publicDir, 'images', 'nust_banner.jpg');
-    // const logoPath = path.join(publicDir, 'images', 'logo.png');
-    // const finalImagePath = path.join(outputsDir, 'nust_banner_with_logo.jpg');
-    // // ✅ Generate image with logo
-    // await addLogoToImage(bannerPath, logoPath, finalImagePath);
+    // Prepare image URL (use your Dropbox link with raw=1)
+    const bannerPath = path.join(publicDir, 'images', 'nust_banner.jpg');
+    const logoPath = path.join(publicDir, 'images', 'logo.png');
+    const finalImagePath = path.join(outputsDir, 'nust_banner_with_logo.jpg');
+    // ✅ Generate image with logo
+    await addLogoToImage(bannerPath, logoPath, finalImagePath);
 
-    // // ✅ Upload image to Dropbox
-    // const imageUrl = await uploadFile(finalImagePath);
-    // console.log(`📤 Logo image uploaded to Dropbox: ${imageUrl}`);
+    // ✅ Upload image to Dropbox
+    const imageUrl = await uploadFile(finalImagePath);
+    console.log(`📤 Logo image uploaded to Dropbox: ${imageUrl}`);
 
-    // const message = deadlineDate
-    //   ? `*🔔 National University of Medical Sciences*\n` +
-    //     "`Admissions`\n" +
-    //     `Nums has announced the Mbbs admission process.\n*Admissions start on:* ${admissionStartDate}\n\n` +
-    //     "`Tap to Join, Share & Shine`\n" +
-    //     `https://whatsapp.com/channel/0029Vb9qWtQGE56sYuYipX1P`
-    //   : `ℹ️ Latest Nust Admission Updates\n\n📊 See attached data`;
+    const message = admissionStartDate
+      ? `*🔔 National University of Medical Sciences*\n` +
+        "`Admissions`\n" +
+        `Nums has announced the Mbbs admission process.\n*Admissions start on:* ${admissionStartDate}\n\n` +
+        "`Tap to Join, Share & Shine`\n" +
+        `https://whatsapp.com/channel/0029Vb9qWtQGE56sYuYipX1P`
+      : `ℹ️ Latest Nust Admission Updates\n\n📊 See attached data`;
 
-    // // Send WhatsApp with both media
-    // await sendWhatsAppWithMedia(message, imageUrl);
-    // console.log("🚀 WhatsApp notification sent!");
+    // Send WhatsApp with both media
+    await sendWhatsAppWithMedia(message, imageUrl);
+    console.log("🚀 WhatsApp notification sent!");
   } catch (error) {
     console.error("❌ Process failed:", error);
     if (error.code === 'ENOENT') {
