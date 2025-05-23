@@ -70,14 +70,106 @@ AI-WEB-SCRAPING-BOT/
 ├── index.js                 # Main entry point
 └── package.json             # Project metadata
 
-🚦 Deployment
-Hosting on Railway
 
-1. Connect GitHub repository to Railway
-2. Set environment variables in Railway dashboard
-3. Configure automated deployments
-4. Set weekly cron job (Monday 12:00 PM PKT)
+## 🚀 Deployment & Hosting
 
+### 🌐 Railway Configuration
+```bash
+1. Connect your GitHub repository to Railway
+2. Navigate to 'Variables' tab in Railway dashboard
+3. Add all environment variables from .env.example
+4. Set deployment trigger to 'Auto Deploy'
+5. Verify build process completes successfully
+
+⏰ Cron Job Setup
+bash
+1. In Railway dashboard, go to 'Cron Jobs'
+2. Create new job with schedule:
+   - Frequency: Weekly
+   - Day: Monday
+   - Time: 12:00 (PKT)
+3. Attach to production deployment
+4. Test manually via 'Run Now' button
+🔧 Environment Management
+ini
+# Required Variables (Railway -> Settings -> Variables)
+TWILIO_ACCOUNT_SID=your_account_sid
+TWILIO_AUTH_TOKEN=your_auth_token
+GEMINI_API_KEY=your_gemini_key
+DROPBOX_ACCESS_TOKEN=your_dropbox_token
+
+# Optional Overrides
+SCRAPE_INTERVAL=weekly  # daily|weekly|monthly
+MAX_MESSAGES=9          # 1-10
+🔄 Update Workflow
+Diagram
+Code
+graph TD
+    A[Git Push] --> B{Railway CI}
+    B -->|Success| C[Auto-Deploy]
+    B -->|Failure| D[Slack Alert]
+    C --> E[Verify Logs]
+    E --> F[Test Messages]
+📊 Health Monitoring
+Component	Check Command	Expected Output
+Scrapers	railway logs -s 1h	"✅ Excel file saved"
+WhatsApp API	railway run test-msg	Message delivered
+Dropbox Upload	Check /outputs folder	New .xlsx files present
+⚠️ Critical Notes
+
+Always test cron jobs during low-traffic periods
+
+Monitor usage quotas for Twilio/Gemini
+
+Keep .env.example updated with new variables
+
+Use railway logs for real-time debugging
+
+🛠️ Maintenance Commands
+bash
+# Force immediate deployment
+railway up
+
+# Check scheduled jobs
+railway cron:list
+
+# View recent executions
+railway cron:logs
+
+# Temporary pause service
+railway service:suspend
+🔒 Security Checklist
+Enabled 2FA on Railway account
+
+Rotated API keys post-deployment
+
+Restricted Dropbox folder permissions
+
+Verified WhatsApp number whitelisting
+
+Set up monitoring alerts for failures
+
+
+This markdown:
+1. Uses GitHub-flavored syntax for perfect rendering
+2. Maintains consistent emoji headers
+3. Includes executable code blocks
+4. Features a Mermaid diagram for workflow visualization
+5. Provides tabular data for health checks
+6. Has clear warning callouts
+7. Uses proper indentation and spacing
+
+The section will appear as a well-organized block in GitHub's README viewer with:
+- Blue code blocks
+- Properly rendered tables
+- Visible emoji icons
+- Clear section boundaries
+
+For maximum readability:
+1. Keep line lengths under 80 chars where possible
+2. Use ` ``` ` fences for all code/mermaid blocks
+3. Maintain consistent header levels (## for sections, ### for subsections)
+4. Place important notes in `> ` blockquotes
 
 
 
