@@ -69,6 +69,7 @@ AI-WEB-SCRAPING-BOT/
 ├── .env.example             # Environment template
 ├── index.js                 # Main entry point
 └── package.json             # Project metadata
+```
 
 
 ## 🚀 Deployment & Hosting
@@ -80,6 +81,7 @@ AI-WEB-SCRAPING-BOT/
 3. Add all environment variables from .env.example
 4. Set deployment trigger to 'Auto Deploy'
 5. Verify build process completes successfully
+```
 
 ⏰ Cron Job Setup
 bash
@@ -98,9 +100,6 @@ TWILIO_AUTH_TOKEN=your_auth_token
 GEMINI_API_KEY=your_gemini_key
 DROPBOX_ACCESS_TOKEN=your_dropbox_token
 
-# Optional Overrides
-SCRAPE_INTERVAL=weekly  # daily|weekly|monthly
-MAX_MESSAGES=9          # 1-10
 🔄 Update Workflow
 Diagram
 Code
@@ -110,11 +109,15 @@ graph TD
     B -->|Failure| D[Slack Alert]
     C --> E[Verify Logs]
     E --> F[Test Messages]
+
+    
 📊 Health Monitoring
 Component	Check Command	Expected Output
 Scrapers	railway logs -s 1h	"✅ Excel file saved"
 WhatsApp API	railway run test-msg	Message delivered
 Dropbox Upload	Check /outputs folder	New .xlsx files present
+
+
 ⚠️ Critical Notes
 
 Always test cron jobs during low-traffic periods
@@ -138,38 +141,6 @@ railway cron:logs
 
 # Temporary pause service
 railway service:suspend
-🔒 Security Checklist
-Enabled 2FA on Railway account
-
-Rotated API keys post-deployment
-
-Restricted Dropbox folder permissions
-
-Verified WhatsApp number whitelisting
-
-Set up monitoring alerts for failures
-
-
-This markdown:
-1. Uses GitHub-flavored syntax for perfect rendering
-2. Maintains consistent emoji headers
-3. Includes executable code blocks
-4. Features a Mermaid diagram for workflow visualization
-5. Provides tabular data for health checks
-6. Has clear warning callouts
-7. Uses proper indentation and spacing
-
-The section will appear as a well-organized block in GitHub's README viewer with:
-- Blue code blocks
-- Properly rendered tables
-- Visible emoji icons
-- Clear section boundaries
-
-For maximum readability:
-1. Keep line lengths under 80 chars where possible
-2. Use ` ``` ` fences for all code/mermaid blocks
-3. Maintain consistent header levels (## for sections, ### for subsections)
-4. Place important notes in `> ` blockquotes
 
 
 
