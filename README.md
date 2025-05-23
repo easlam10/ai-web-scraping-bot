@@ -186,35 +186,15 @@ All operations include emoji-enhanced logs:
 ### 📝 Template Updates
 Modify WhatsApp message formats in messageTemplates/.
 
-### 🧰 Dependency Updates
-```bash
-Copy
-Edit
-npm outdated
-npm update```
-
-
 ## 🚀 Deployment & Hosting
 
 ### 🌐 Railway Configuration
-```bash
+
 1. Connect your GitHub repository to Railway
 2. Navigate to 'Variables' tab in Railway dashboard
 3. Add all environment variables from .env.example
 4. Set deployment trigger to 'Auto Deploy'
 5. Verify build process completes successfully
-```
-
-### 🔄 Update Workflow
-Diagram
-Code
-graph TD
-    A[Git Push] --> B{Railway CI}
-    B -->|Success| C[Auto-Deploy]
-    B -->|Failure| D[Slack Alert]
-    C --> E[Verify Logs]
-    E --> F[Test Messages]
-
 
 
 ### ⚠️ Critical Notes
@@ -228,17 +208,17 @@ graph TD
 - Use railway logs for real-time debugging
 
 ### 🛠️ Maintenance Commands
-bash
-# Force immediate deployment
+
+### Force immediate deployment
 ```railway up```
 
-# Check scheduled jobs
+### Check scheduled jobs
 ```railway cron:list```
 
-# View recent executions
+### View recent executions
 ```railway cron:logs```
 
-# Temporary pause service
+### Temporary pause service
 ```railway service:suspend```
 
 
