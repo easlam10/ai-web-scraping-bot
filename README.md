@@ -73,12 +73,50 @@ AI-WEB-SCRAPING-BOT/
 
 ```
 
-📦 Environment Configuration
-Create a .env file based on .env.example:
+## 📦 Environment Configuration
 
-ini
+Create a `.env` file based on `.env.example`:
+
+```ini
+# Twilio Configuration
+TWILIO_ACCOUNT_SID=your_account_sid
+TWILIO_AUTH_TOKEN=your_auth_token
+TWILIO_WHATSAPP_NUMBER=whatsapp:+14155238886
+RECIPIENT_WHATSAPP_NUMBER=whatsapp:+923000000000
+
+# WhatsApp Meta Configuration
+WHATSAPP_TOKEN=your_meta_token
+WHATSAPP_PHONE_NUMBER_ID=your_meta_number_id
+WHATSAPP_RECIPIENT_NUMBER=923000000000
+
+# Dropbox Configuration
+DROPBOX_ACCESS_TOKEN=your_dropbox_token
+DROPBOX_REFRESH_TOKEN=your_refresh_token
+
+# AI Configuration
+GEMINI_API_KEY=your_gemini_key
+⚠️ Security Note
+
+Never commit .env files to version control.
+
+Share credentials securely (e.g., 1Password, LastPass, encrypted email).
+
+Rotate all tokens before handover.
+
+🚀 Running the System
+▶️ Manual Execution
+bash
 Copy
 Edit
+node index.js
+⏰ Scheduled Execution (CRON)
+bash
+Copy
+Edit
+npm install -g pm2
+pm2 start index.js --cron "0 9 * * *"  # Runs daily at 9 AM
+pm2 save
+pm2 startup
 # Twilio Configuration
 TWILIO_ACCOUNT_SID=your_account_sid
 TWILIO_AUTH_TOKEN=your_auth_token
