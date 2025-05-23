@@ -111,6 +111,34 @@ GEMINI_API_KEY=your_gemini_key
 
 ## 🤖 How It Works
 
+flowchart TD
+    A[🌐 Web Content] -->|Puppeteer + Cheerio| B[Web Scraping]
+    B -->|Raw Data| C[AI Processing]
+    C -->|Google Gemini API| D[Analysis Results]
+    D --> E{Output Type}
+    E -->|Images| F[📷 Sharp Processing]
+    E -->|Documents| G[📁 Dropbox Storage]
+    E -->|Spreadsheets| H[📊 ExcelJS Export]
+    E -->|Alerts| I[💬 Twilio/Meta APIs]
+    
+    subgraph TechStack["🛠️ Technical Stack"]
+        direction TB
+        ST1[Node.js v18+] --> ST2[Puppeteer]
+        ST2 --> ST3[Cheerio]
+        ST1 --> ST4[Gemini API]
+        ST1 --> ST5[Sharp]
+        ST1 --> ST6[ExcelJS]
+        ST7[Twilio API] --> ST8[Meta Cloud API]
+        ST9[Dropbox SDK] --> ST10[Railway Hosting]
+    end
+    
+    B -.->|Core Platform| ST1
+    C -.-> ST4
+    F -.-> ST5
+    H -.-> ST6
+    I -.-> ST7
+    G -.-> ST9
+    
 ### 🔗 URL Processing  
 - Each university has a dedicated URLs array  
 - Example: `nustUrls` in `nustScraper.js`  
