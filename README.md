@@ -111,33 +111,36 @@ GEMINI_API_KEY=your_gemini_key
 
 ## 🤖 How It Works
 
+```mermaid
 flowchart TD
-    A[🌐 Web Content] -->|Puppeteer + Cheerio| B[Web Scraping]
-    B -->|Raw Data| C[AI Processing]
-    C -->|Google Gemini API| D[Analysis Results]
-    D --> E{Output Type}
-    E -->|Images| F[📷 Sharp Processing]
-    E -->|Documents| G[📁 Dropbox Storage]
-    E -->|Spreadsheets| H[📊 ExcelJS Export]
-    E -->|Alerts| I[💬 Twilio/Meta APIs]
-    
+    A[🌐 Target Webpage] -->|Puppeteer| B[Fetch Page Content]
+    B -->|HTML| C[Cheerio Parsing]
+    C -->|Structured Data| D[Helper Functions]
+    D -->|Extracted Info| E{Output Channels}
+    E -->|Data Tables| F[📊 ExcelJS]
+    E -->|Banners| G[📷 Sharp]
+    F -->|.xlsx File| H[📁 Dropbox Upload]
+    G -->|.png Banner| H
+    H -->|Files Ready| I[💬 Twilio/Meta API]
+    I --> J[📱 WhatsApp Message]
+
     subgraph TechStack["🛠️ Technical Stack"]
         direction TB
         ST1[Node.js v18+] --> ST2[Puppeteer]
-        ST2 --> ST3[Cheerio]
-        ST1 --> ST4[Gemini API]
+        ST1 --> ST3[Cheerio]
+        ST1 --> ST4[ExcelJS]
         ST1 --> ST5[Sharp]
-        ST1 --> ST6[ExcelJS]
-        ST7[Twilio API] --> ST8[Meta Cloud API]
-        ST9[Dropbox SDK] --> ST10[Railway Hosting]
+        ST1 --> ST6[Dropbox SDK]
+        ST1 --> ST7[Twilio/Meta API]
     end
-    
-    B -.->|Core Platform| ST1
-    C -.-> ST4
-    F -.-> ST5
+
+    B -.-> ST2
+    C -.-> ST3
+    F -.-> ST4
+    G -.-> ST5
     H -.-> ST6
     I -.-> ST7
-    G -.-> ST9
+```
     
 ### 🔗 URL Processing  
 - Each university has a dedicated URLs array  
