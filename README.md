@@ -1,6 +1,6 @@
 # University Information Scraper System
 
-## 📌 Overview
+# 📌 Overview
 
 A Node.js automation system that:
 1. Scrapes admission information from 5 Pakistani universities (NUST, NUMS, PIEAS, GIKI, FAST)
@@ -9,7 +9,7 @@ A Node.js automation system that:
 4. Stores structured data in Excel files
 5. Distributes updates via WhatsApp (Twilio/Meta) with branded visuals
 
-## 🛠️ Technical Stack
+# 🛠️ Technical Stack
 
 | Component           | Technology                          |
 |---------------------|-------------------------------------|
@@ -24,7 +24,7 @@ A Node.js automation system that:
 
 ---
 
-## 📂 Project Structure
+# 📂 Project Structure
 
 ```bash
 AI-WEB-SCRAPING-BOT/
@@ -73,7 +73,7 @@ AI-WEB-SCRAPING-BOT/
 
 ## 🚀 How to Run
 
-# 1. Clone the repo and install dependencies
+### 1. Clone the repo and install dependencies
 
 ```
 git clone https://github.com/your-repo/university-scraper.git
@@ -81,7 +81,7 @@ cd university-scraper
 npm install
 ```
 
-# 2. Run the project
+### 2. Run the project
 ```
 node index.js
 ```
@@ -122,7 +122,7 @@ flowchart TD
 ```
     
 
-# 🔗 URL Processing
+### 🔗 URL Processing
 Each scraper (e.g., nustScraper.js) processes a list of university-specific URLs:
 
 ```
@@ -136,14 +136,14 @@ const nustUrls = [
 ];
 ```
 
-# 🧠 Content Extraction
+### 🧠 Content Extraction
 Each URL is fetched, and HTML is parsed using Cheerio:
 ```
 const html = await fetchPageContent(url);
 const structuredData = extractNustStructuredContent(html);
 ```
 
-# 📊 Data Analysis
+### 📊 Data Analysis
 Dynamic data like test schedules and deadlines are extracted:
 
 ```
@@ -151,7 +151,7 @@ const netData = extractLatestNetDeadlineAndExamDate(html);
 const mathData = extractMathCourseDateForFscPreMed(html);
 ```
 
-# 💬 Message Generation
+### 💬 Message Generation
 Message templates dynamically generate WhatsApp messages:
 ```
 messages.push(
@@ -163,7 +163,7 @@ messages.push(
 );
 ```
 
-# 🧾 Output Generation
+### 🧾 Output Generation
 Excel File
 ```
 await writeToExcel(pages, fileName);
@@ -177,7 +177,7 @@ await addLogoToImage(bannerPath, logoPath, finalImagePath);
 ```
 Takes a banner (e.g. nust_banner.jpg from /public/images) and overlays the logo, then saves to /outputs.
 
-# 📤 Distribution
+### 📤 Distribution
 Dropbox Upload
 ```
 js
@@ -185,14 +185,14 @@ const fileUrl = await uploadFile(fileName);           // Excel
 const imageUrl = await uploadFile(finalImagePath);    // Banner
 ```
 
-# WhatsApp Messaging via Twilio
+### WhatsApp Messaging via Twilio
 ```
 js
 await sendWhatsAppTwilio(message);
 Sends each generated message individually.
 ```
 
-# ✅ Sample Output
+### ✅ Sample Output
 Excel: /outputs/Nust_admissions_TIMESTAMP.xlsx
 
 Banner with Logo: /outputs/nust_banner_with_logo.jpg
@@ -280,7 +280,7 @@ Modify WhatsApp message formats in messageTemplates/.
 
 ## 🚀 Deployment & Hosting
 
-# 🖥️ Hosting on Railway
+### 🖥️ Hosting on Railway
 
 🔧 Railway Setup
 Go to Railway
@@ -310,7 +310,7 @@ GEMINI_API_KEY=your_gemini_key
 ⚠️ Security Note
 ```
 
-# ⏰ Cron Job Configuration
+### ⏰ Cron Job Configuration
 To auto-run weekly:
 
 In Railway dashboard, go to your project
