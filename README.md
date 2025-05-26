@@ -69,9 +69,110 @@ AI-WEB-SCRAPING-BOT/
 ├── .env.example             # Environment template
 ├── index.js                 # Main entry point
 └── package.json             # Project metadata
+```
 
+## 🚀 How to Run
+
+# 1. Clone the repo and install dependencies
 
 ```
+git clone https://github.com/your-repo/university-scraper.git
+cd university-scraper
+npm install
+```
+
+# 2. Run the project
+```
+node index.js
+```
+This will trigger all scrapers (nust, nums, pieas, giki, fast) sequentially.
+
+
+# 🔗 URL Processing
+Each scraper (e.g., nustScraper.js) processes a list of university-specific URLs:
+
+```
+js
+const nustUrls = [
+  {
+    url: "https://nust.edu.pk/admissions/undergraduates/updates-on-ug-admissions/",
+    name: "Updates on UG Admissions",
+  },
+  // more...
+];
+```
+
+# 🧠 Content Extraction
+Each URL is fetched, and HTML is parsed using Cheerio:
+```
+js
+
+const html = await fetchPageContent(url);
+const structuredData = extractNustStructuredContent(html);
+```
+
+# 📊 Data Analysis
+Dynamic data like test schedules and deadlines are extracted:
+
+js
+```
+const netData = extractLatestNetDeadlineAndExamDate(html);
+const mathData = extractMathCourseDateForFscPreMed(html);
+```
+
+# 💬 Message Generation
+Message templates dynamically generate WhatsApp messages:
+```
+js
+messages.push(
+  nustMessages.netAdmissionSchedule({
+    deadline: "2024-05-15",
+    examStartDate: "2024-06-01",
+    series: "NET 3",
+  })
+);
+```
+
+# 🧾 Output Generation
+Excel File
+```
+js
+await writeToExcel(pages, fileName);
+```
+Saved in /outputs/ directory.
+
+Banner Image with Logo
+```
+js
+await addLogoToImage(bannerPath, logoPath, finalImagePath);
+```
+Takes a banner (e.g. nust_banner.jpg from /public/images) and overlays the logo, then saves to /outputs.
+
+# 📤 Distribution
+Dropbox Upload
+```
+js
+const fileUrl = await uploadFile(fileName);           // Excel
+const imageUrl = await uploadFile(finalImagePath);    // Banner
+```
+
+# WhatsApp Messaging via Twilio
+```
+js
+await sendWhatsAppTwilio(message);
+Sends each generated message individually.
+```
+
+# ✅ Sample Output
+Excel: /outputs/Nust_admissions_TIMESTAMP.xlsx
+
+Banner with Logo: /outputs/nust_banner_with_logo.jpg
+
+Dropbox links logged in console
+
+WhatsApp messages sent one-by-one
+
+
 
 ## 📦 Environment Configuration
 
