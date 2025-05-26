@@ -289,18 +289,18 @@ Create a new project → Deploy from GitHub
 
 Set environment variables in Railway's “Variables” tab:
 
-# Twilio Configuration
+ Twilio Configuration
 TWILIO_ACCOUNT_SID=your_account_sid
 TWILIO_AUTH_TOKEN=your_auth_token
 TWILIO_WHATSAPP_NUMBER=whatsapp:+14155238886
 RECIPIENT_WHATSAPP_NUMBER=whatsapp:+923000000000
 
-# WhatsApp Meta Configuration
+ WhatsApp Meta Configuration
 WHATSAPP_TOKEN=your_meta_token
 WHATSAPP_PHONE_NUMBER_ID=your_meta_number_id
 WHATSAPP_RECIPIENT_NUMBER=923000000000
 
-# Dropbox Configuration
+ Dropbox Configuration
 DROPBOX_ACCESS_TOKEN=your_dropbox_token
 DROPBOX_REFRESH_TOKEN=your_refresh_token
 
