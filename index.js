@@ -6,7 +6,7 @@ const scrapFast = require("./scrapers/fastScraper");
 
 async function runScrapers() {
   
-    console.log('Starting scrapers...');
+    console.log("Starting scrapers...");
     await scrapNust();
     await scrapNums();
     await scrapPieas();
