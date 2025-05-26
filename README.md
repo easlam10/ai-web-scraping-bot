@@ -87,12 +87,46 @@ node index.js
 ```
 This will trigger all scrapers (nust, nums, pieas, giki, fast) sequentially.
 
+## How it Works
+
+
+```mermaid
+flowchart TD
+    A[🌐 Target Webpage] -->|Puppeteer| B[Fetch Page Content]
+    B -->|HTML| C[Cheerio Parsing]
+    C -->|Structured Data| D[Helper Functions]
+    D -->|Extracted Info| E{Output Channels}
+    E -->|Data Tables| F[📊 ExcelJS]
+    E -->|Banners| G[📷 Sharp]
+    F -->|.xlsx File| H[📁 Dropbox Upload]
+    G -->|.png Banner| H
+    H -->|Files Ready| I[💬 Twilio/Meta API]
+    I --> J[📱 WhatsApp Message]
+
+    subgraph TechStack["🛠️ Technical Stack"]
+        direction TB
+        ST1[Node.js v18+] --> ST2[Puppeteer]
+        ST1 --> ST3[Cheerio]
+        ST1 --> ST4[ExcelJS]
+        ST1 --> ST5[Sharp]
+        ST1 --> ST6[Dropbox SDK]
+        ST1 --> ST7[Twilio/Meta API]
+    end
+
+    B -.-> ST2
+    C -.-> ST3
+    F -.-> ST4
+    G -.-> ST5
+    H -.-> ST6
+    I -.-> ST7
+```
+    
 
 # 🔗 URL Processing
 Each scraper (e.g., nustScraper.js) processes a list of university-specific URLs:
 
 ```
-js
+
 const nustUrls = [
   {
     url: "https://nust.edu.pk/admissions/undergraduates/updates-on-ug-admissions/",
@@ -105,8 +139,6 @@ const nustUrls = [
 # 🧠 Content Extraction
 Each URL is fetched, and HTML is parsed using Cheerio:
 ```
-js
-
 const html = await fetchPageContent(url);
 const structuredData = extractNustStructuredContent(html);
 ```
@@ -114,7 +146,6 @@ const structuredData = extractNustStructuredContent(html);
 # 📊 Data Analysis
 Dynamic data like test schedules and deadlines are extracted:
 
-js
 ```
 const netData = extractLatestNetDeadlineAndExamDate(html);
 const mathData = extractMathCourseDateForFscPreMed(html);
@@ -123,7 +154,6 @@ const mathData = extractMathCourseDateForFscPreMed(html);
 # 💬 Message Generation
 Message templates dynamically generate WhatsApp messages:
 ```
-js
 messages.push(
   nustMessages.netAdmissionSchedule({
     deadline: "2024-05-15",
@@ -136,7 +166,6 @@ messages.push(
 # 🧾 Output Generation
 Excel File
 ```
-js
 await writeToExcel(pages, fileName);
 ```
 Saved in /outputs/ directory.
@@ -210,72 +239,6 @@ GEMINI_API_KEY=your_gemini_key
 
 ---
 
-## 🤖 How It Works
-
-```mermaid
-flowchart TD
-    A[🌐 Target Webpage] -->|Puppeteer| B[Fetch Page Content]
-    B -->|HTML| C[Cheerio Parsing]
-    C -->|Structured Data| D[Helper Functions]
-    D -->|Extracted Info| E{Output Channels}
-    E -->|Data Tables| F[📊 ExcelJS]
-    E -->|Banners| G[📷 Sharp]
-    F -->|.xlsx File| H[📁 Dropbox Upload]
-    G -->|.png Banner| H
-    H -->|Files Ready| I[💬 Twilio/Meta API]
-    I --> J[📱 WhatsApp Message]
-
-    subgraph TechStack["🛠️ Technical Stack"]
-        direction TB
-        ST1[Node.js v18+] --> ST2[Puppeteer]
-        ST1 --> ST3[Cheerio]
-        ST1 --> ST4[ExcelJS]
-        ST1 --> ST5[Sharp]
-        ST1 --> ST6[Dropbox SDK]
-        ST1 --> ST7[Twilio/Meta API]
-    end
-
-    B -.-> ST2
-    C -.-> ST3
-    F -.-> ST4
-    G -.-> ST5
-    H -.-> ST6
-    I -.-> ST7
-```
-    
-### 🔗 URL Processing  
-- Each university has a dedicated URLs array  
-- Example: `nustUrls` in `nustScraper.js`  
-
-### 🧠 Content Extraction  
-```javascript
-const html = await fetchPageContent(url);
-const structuredData = extractNustStructuredContent(html);
-```
-
-### 📊 Data Analysis
-Uses Cheerio-parsed structured content
-
-Extracts key information via university-specific files (e.g. extractNustInfo.js)
-
-### 💬 Message Generation
-```javascript
-messages.push(nustMessages.netAdmissionSchedule({
-  deadline: "2024-05-15",
-  examStartDate: "2024-06-01"
-}));
-```
-
-### 🧾 Output Generation
-Excel reports with raw data (outputs/ directory)
-
-Branded images with institutional logos
-
-### 📤 Distribution
-WhatsApp messages via Twilio/Meta APIs
-
-Cloud storage via Dropbox integration
-
 ## 🔐 Security Considerations
 
 ### 📁 Environment Variables
@@ -309,9 +272,6 @@ All operations include emoji-enhanced logs:
 
 ### 🛠 Error Handling
 - Automatic retries for failed scrapes.
-
-- Fallback to structured data when AI fails.
-
 - Graceful degradation for partial university failures.
 
 
@@ -320,24 +280,51 @@ Modify WhatsApp message formats in messageTemplates/.
 
 ## 🚀 Deployment & Hosting
 
-### 🌐 Railway Configuration
+# 🖥️ Hosting on Railway
 
-1. Connect your GitHub repository to Railway
-2. Navigate to 'Variables' tab in Railway dashboard
-3. Add all environment variables from .env.example
-4. Set deployment trigger to 'Auto Deploy'
-5. Verify build process completes successfully
+🔧 Railway Setup
+Go to Railway
 
+Create a new project → Deploy from GitHub
 
-### ⚠️ Critical Notes
+Set environment variables in Railway's “Variables” tab:
 
-- Always test cron jobs during low-traffic periods
+# Twilio Configuration
+TWILIO_ACCOUNT_SID=your_account_sid
+TWILIO_AUTH_TOKEN=your_auth_token
+TWILIO_WHATSAPP_NUMBER=whatsapp:+14155238886
+RECIPIENT_WHATSAPP_NUMBER=whatsapp:+923000000000
 
-- Monitor usage quotas for Twilio/Gemini
+# WhatsApp Meta Configuration
+WHATSAPP_TOKEN=your_meta_token
+WHATSAPP_PHONE_NUMBER_ID=your_meta_number_id
+WHATSAPP_RECIPIENT_NUMBER=923000000000
 
-- Keep .env.example updated with new variables
+# Dropbox Configuration
+DROPBOX_ACCESS_TOKEN=your_dropbox_token
+DROPBOX_REFRESH_TOKEN=your_refresh_token
 
-- Use railway logs for real-time debugging
+etc.
+
+# ⏰ Cron Job Configuration
+To auto-run weekly:
+
+In Railway dashboard, go to your project
+
+Click on "Deployments → New Trigger"
+
+Choose Cron
+
+Set this cron expression:
+
+```
+0 7 * * 1
+```
+🕛 This runs every Monday at 12:00 PM Pakistan Time (UTC+5)
+
+🎯 You can customize it!
+Use any cron expression — e.g. daily, weekends, specific hours.
+
 
 ### 🛠️ Maintenance Commands
 
