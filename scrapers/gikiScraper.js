@@ -1,17 +1,18 @@
 const { extractGikiStructuredContent } = require("../extraction/extractGiki");
-const { sendWhatsAppWithMedia } = require("../services/twilioService");
+const {
+  sendMetaCloudTemplateMessage,
+} = require("../services/metaCloudService");
 const uploadFile = require("../services/dropboxService");
 const addLogoToImage = require("../services/addLogoToImage");
-const { writeToExcel } = require("../services/excelWriter");
-const { sendWhatsAppMessage } = require("../services/whatsappService");
 const { generateMessagesFromContent } = require("../services/aiService");
-const gikiMessages = require("../messageTemplates/gikiMessages");
+const { writeToExcel } = require("../services/excelWriter");
 const { fetchPageContent } = require("../services/fetchPageContent");
-const path = require("path");
-const fs = require("fs");
 const {
   extractDatesFromGikiStructuredContent,
 } = require("../importantInfo/extractGikiInfo");
+const gikiMessages = require("../messageTemplates/gikiMessages");
+const path = require("path");
+const fs = require("fs");
 const projectRoot = path.join(__dirname, "..");
 const outputsDir = path.join(projectRoot, "outputs");
 const publicDir = path.join(projectRoot, "public");
@@ -30,35 +31,39 @@ async function scrapGiki() {
 
     const gikiUrls = [
       {
-        url: "https://giki.edu.pk/admissions/admissions-undergraduates/",
-        name: "Undergraduate Admissions",
+        url: "https://giki.edu.pk/admissions/undergraduate/",
+        name: "Undergraduate",
       },
       {
-        url: "https://giki.edu.pk/admissions/admissions-undergraduates/eligibility-criteria/ ",
-        name: "Eligibility and Assessment Criteria",
+        url: "https://giki.edu.pk/admissions/undergraduate/eligibility-criteria/",
+        name: "Eligibility Criteria",
       },
       {
-        url: "https://giki.edu.pk/admissions/admissions-undergraduates/undergraduate-admission-test-syllabus/  ",
-        name: "Undergraduate Admission Test Syllabus",
+        url: "https://giki.edu.pk/admissions/undergraduate/admission-procedure/",
+        name: "Admission Procedure",
       },
       {
-        url: "https://giki.edu.pk/admissions/admissions-undergraduates/ugradhow-to-apply/  ",
-        name: "Application Procedure (How to Apply)",
+        url: "https://giki.edu.pk/admissions/undergraduate/admission-schedule/",
+        name: "Admission Schedule",
       },
       {
-        url: "https://giki.edu.pk/admissions/admissions-undergraduates/ugrad-fees-and-expenses/  ",
-        name: "Fees and Expenses",
+        url: "https://giki.edu.pk/admissions/undergraduate/fee-structure/",
+        name: "Fee Structure",
       },
       {
-        url: "https://giki.edu.pk/payment/",
-        name: "Payment Methods",
+        url: "https://giki.edu.pk/admissions/undergraduate/financial-assistance/",
+        name: "Financial Assistance",
       },
       {
-        url: "https://giki.edu.pk/transfer-from-other-universities/",
-        name: "Transfer from other Universities",
+        url: "https://giki.edu.pk/admissions/undergraduate/admission-test-pattern/",
+        name: "Admission Test Pattern",
       },
       {
-        url: "https://www.facebook.com/OfficialGIKI/",
+        url: "https://giki.edu.pk/academics/faculties/",
+        name: "Faculties",
+      },
+      {
+        url: "https://www.facebook.com/GIKInstitute.official/ ",
         name: "Digital Media Link",
       },
       {
@@ -68,133 +73,173 @@ async function scrapGiki() {
     ];
 
     const pages = [];
-    let messages = [];
     let dynamicData = {
       applicationDates: null,
       financialAidDeadline: null,
       admissionTestDates: null,
       meritListDate: null,
-      orientationAndCommencementDate: null,
+      orientationDates: null,
     };
 
+    // Fetch and extract data from all URLs
     for (const { url, name } of gikiUrls) {
       console.log(`🌐 Scraping: ${url}`);
       const html = await fetchPageContent(url);
       const structuredData = extractGikiStructuredContent(html);
       pages.push({ name, structuredData });
 
-
       const dates = extractDatesFromGikiStructuredContent(structuredData);
 
-      if (dates.applicationDates?.startDate && dates.applicationDates?.deadlineDate) {
+      if (dates.applicationDates) {
         dynamicData.applicationDates = dates.applicationDates;
       }
       if (dates.financialAidDeadline) {
         dynamicData.financialAidDeadline = dates.financialAidDeadline;
       }
-      if (dates.admissionTestDates?.testDate && dates.admissionTestDates?.resultDate) {
+      if (dates.admissionTestDates) {
         dynamicData.admissionTestDates = dates.admissionTestDates;
       }
       if (dates.meritListDate) {
         dynamicData.meritListDate = dates.meritListDate;
       }
-      if (dates.orientationDates?.orientationDate && dates.orientationDates?.commencementDate) {
-        dynamicData.orientationAndCommencementDate = dates.orientationDates;
+      if (dates.orientationDates) {
+        dynamicData.orientationDates = dates.orientationDates;
       }
     }
-    
 
+    console.log(dynamicData);
 
+    // // Process and save excel file
+    // const fileName = path.join(
+    //   outputsDir,
+    //   `Giki_admissions_${Date.now()}.xlsx`
+    // );
+    // await writeToExcel(pages, fileName);
+    // console.log(`✅ Excel file saved: ${fileName}`);
 
-    if (dynamicData.applicationDates) {
-      messages.push(
-        gikiMessages.applicationSchedule({
-          startingDate:
-            dynamicData.applicationDates.startDate || "To be announced",
-          deadline:
-            dynamicData.applicationDates.deadlineDate || "To be announced",
-        })
-      );
+    // // Upload to Dropbox
+    // const fileUrl = await uploadFile(fileName);
+    // console.log(`📤 File uploaded to Dropbox: ${fileUrl}`);
+
+    // Prepare image URL
+    // const bannerPath = path.join(publicDir, "images", "giki_banner.jpg");
+    // const logoPath = path.join(publicDir, "images", "logo.png");
+    // const finalImagePath = path.join(outputsDir, "giki_banner_with_logo.jpg");
+
+    // // Generate image with logo
+    // await addLogoToImage(bannerPath, logoPath, finalImagePath);
+
+    // // Upload image to Dropbox
+    // const imageUrl = await uploadFile(finalImagePath);
+    // console.log(`📤 Logo image uploaded to Dropbox: ${imageUrl}`);
+
+    // Send all messages in order using templates
+    console.log("📱 Sending messages through Meta Cloud API...");
+
+    // Create an array of message sending functions to send in sequence
+    const messageSenders = [
+      // 1. Application Schedule
+      async () => {
+        console.log("📨 Sending message 1: Application Schedule");
+        const startingDate =
+          dynamicData.applicationDates?.startingDate || "To be announced";
+        const deadline =
+          dynamicData.applicationDates?.deadlineDate || "To be announced";
+        await sendMetaCloudTemplateMessage("giki_msg_1", [
+          startingDate,
+          deadline,
+        ]);
+      },
+
+      // 2. Financial Aid Deadline
+      async () => {
+        console.log("📨 Sending message 2: Financial Aid Deadline");
+        const deadline = dynamicData.financialAidDeadline || "To be announced";
+        await sendMetaCloudTemplateMessage("giki_msg_2", [deadline]);
+      },
+
+      // 3. Admission Test
+      async () => {
+        console.log("📨 Sending message 3: Admission Test");
+        const testDate =
+          dynamicData.admissionTestDates?.testDate || "To be announced";
+        const resultDate =
+          dynamicData.admissionTestDates?.resultDate || "To be announced";
+        await sendMetaCloudTemplateMessage("giki_msg_3", [
+          testDate,
+          resultDate,
+        ]);
+      },
+
+      // 4. Merit List
+      async () => {
+        console.log("📨 Sending message 4: Merit List");
+        const meritListDate = dynamicData.meritListDate || "To be announced";
+        await sendMetaCloudTemplateMessage("giki_msg_4", [meritListDate]);
+      },
+
+      // 5. Orientation Date
+      async () => {
+        console.log("📨 Sending message 5: Orientation Date");
+        const orientationDate =
+          dynamicData.orientationDates?.orientationDate || "To be announced";
+        const classesCommencementDate =
+          dynamicData.orientationDates?.commencementDate || "To be announced";
+        await sendMetaCloudTemplateMessage("giki_msg_5", [
+          orientationDate,
+          classesCommencementDate,
+        ]);
+      },
+
+      // 6. Classes Commencement
+      async () => {
+        console.log("📨 Sending message 6: Classes Commencement");
+        // No parameters needed for this template
+        await sendMetaCloudTemplateMessage("giki_msg_6", []);
+      },
+
+      // 7. Merit Criteria
+      async () => {
+        console.log("📨 Sending message 7: Merit Criteria");
+        await sendMetaCloudTemplateMessage("giki_msg_7", []);
+      },
+
+      // 8. Eligibility Criteria
+      async () => {
+        console.log("📨 Sending message 8: Eligibility Criteria");
+        await sendMetaCloudTemplateMessage("giki_msg_8", []);
+      },
+
+      // 9. Test Syllabus
+      async () => {
+        console.log("📨 Sending message 9: Test Syllabus");
+        await sendMetaCloudTemplateMessage("giki_msg_9", []);
+      },
+
+      // 10. Application Payment Method
+      async () => {
+        console.log("📨 Sending message 10: Application Payment Method");
+        await sendMetaCloudTemplateMessage("giki_msg_10", []);
+      },
+
+      // 11. Transfer Details
+      async () => {
+        console.log("📨 Sending message 11: Transfer Details");
+        await sendMetaCloudTemplateMessage("giki_msg_11", []);
+      },
+    ];
+
+    // Send all messages in sequence
+    for (let i = 0; i < messageSenders.length; i++) {
+      try {
+        await messageSenders[i]();
+        console.log(`✅ Message ${i + 1} sent successfully`);
+      } catch (error) {
+        console.error(`❌ Failed to send message ${i + 1}:`, error.message);
+      }
     }
 
-    if (dynamicData.financialAidDeadline) {
-      messages.push(
-        gikiMessages.financialAidDeadline({
-          deadline: dynamicData.financialAidDeadline || "To be announced",
-        })
-      );
-    }
-
-    if (dynamicData.admissionTestDates) {
-      messages.push(
-        gikiMessages.admissionTest({
-          testDate:
-            dynamicData.admissionTestDates.testDate || "To be announced",
-          resultDate:
-            dynamicData.admissionTestDates.resultDate || "To be announced",
-        })
-      );
-    }
-
-    if (dynamicData.meritListDate) {
-      messages.push(
-        gikiMessages.meritList({
-          meritListDate: dynamicData.meritListDate || "To be announced",
-        })
-      );
-    }
-
-    if (dynamicData.orientationAndCommencementDate) {
-      messages.push(
-        gikiMessages.classesCommencement({
-          orientationDate:
-            dynamicData.orientationAndCommencementDate.orientationDate ||
-            "To be announced",
-          classesCommencementDate:
-            dynamicData.orientationAndCommencementDate.commencementDate ||
-            "To be announced",
-        })
-      );
-    }
-
-    messages.push(gikiMessages.meritCriteria())
-
-    messages.push(gikiMessages.eligibiltyCriteria());
-
-    messages.push(gikiMessages.testSyllabus());
-
-    messages.push(gikiMessages.applicationPaymentMethod());
-
-    messages.push(gikiMessages.transferDetails());
-
-
-    const fileName = path.join(
-      outputsDir,
-      `Giki_admissions_${Date.now()}.xlsx`
-    );
-    await writeToExcel(pages, fileName);
-    console.log(`✅ Excel file saved: ${fileName}`);
-    // Upload to Dropbox
-
-    const fileUrl = await uploadFile(fileName);
-    console.log(`📤 File uploaded to Dropbox: ${fileUrl}`);
-
-    // Prepare image URL (use your Dropbox link with raw=1)
-    const bannerPath = path.join(publicDir, 'images', 'nust_banner.jpg');
-    const logoPath = path.join(publicDir, 'images', 'logo.png');
-    const finalImagePath = path.join(outputsDir, 'nust_banner_with_logo.jpg');
-    // ✅ Generate image with logo
-    await addLogoToImage(bannerPath, logoPath, finalImagePath);
-
-    // ✅ Upload image to Dropbox
-    const imageUrl = await uploadFile(finalImagePath);
-    console.log(`📤 Logo image uploaded to Dropbox: ${imageUrl}`);
-
-    // Send messages one-by-one on WhatsApp
-     for (const [i, msg] of messages.entries()) {
-      console.log(`📨 Sending message ${i + 1}...`);
-      await sendWhatsAppMessage(msg);
-    }
+    console.log("✅ All GIKI messages sent successfully!");
   } catch (error) {
     console.error("❌ Process failed:", error);
     if (error.code === "ENOENT") {

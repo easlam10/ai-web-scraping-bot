@@ -1,7 +1,12 @@
-const WHATSAPP_CHANNEL_LINK = "https://whatsapp.com/channel/0029Vb9qWtQGE56sYuYipX1P";
+const WHATSAPP_CHANNEL_LINK =
+  "https://whatsapp.com/channel/0029Vb9qWtQGE56sYuYipX1P";
 
 const nustMessages = {
-  netAdmissionSchedule: ({ deadline, examStartDate, series }) =>  ` 📅 *NUST, Islamabad.*
+  netAdmissionSchedule: ({
+    deadline,
+    examStartDate,
+    series,
+  }) => ` 📅 *NUST, Islamabad.*
 \`Admission Schedule\` 
 
 NUST has announced its deadline for the NET-2025 ${series} intake.
@@ -11,16 +16,14 @@ NUST has announced its deadline for the NET-2025 ${series} intake.
 
 \`Tap to Join, Share & Shine\`
 ${WHATSAPP_CHANNEL_LINK}
-`
-,
-
-  mathCourseInfo: ({ deadline }) => `
+`,
+  mathCourseInfo: ({ mathDeadline }) => `
 📘 *NUST, Islamabad.*
 \`Math Course Information\` 
 
 NUST has designed an online self-paced mandatory Mathematics course of 8 weeks duration, for FSc Pre Medical students (who did not take additional math) and are applying for Engineering programs. 
 
-🗓️ *Deadline to complete course:* ${deadline}
+🗓️ *Deadline to complete course:* ${mathDeadline}
 
 \`Tap to Join, Share & Shine\`
 ${WHATSAPP_CHANNEL_LINK}
@@ -43,14 +46,14 @@ ${WHATSAPP_CHANNEL_LINK}
 ${WHATSAPP_CHANNEL_LINK}
 `,
 
-  multiEntryTestSchedule: ({ tests }) => {
-    const testList = tests.map(t => `📌 ${t.name}: ${t.date}`).join('\n');
+  multiEntryTestSchedule: ({ tests, netSeries }) => {
+    const testList = tests.map((t) => `📌 ${t.name}: ${t.date}`).join("\n");
 
     return `
-    🧪 *NET-2025 Test Schedule*
+    🧪 *NET-2025 ${netSeries} Test Schedule*
 \`Entry Tests Schedule\` 
 
-Nust has released dates for applying for NET-2025.
+Nust has released dates for applying for NET-2025 ${netSeries}.
   
 ${testList}
 
@@ -64,7 +67,7 @@ ${WHATSAPP_CHANNEL_LINK}
 `;
   },
 
-academicQualification: () => `
+  academicQualification: () => `
 📄 *NUST, Islamabad.*
 \`Academic Qualification\` 
 
@@ -77,10 +80,8 @@ NUST has outlined the academic qualification criteria for undergraduate programs
 
 \`Tap to Join, Share & Shine\`
 ${WHATSAPP_CHANNEL_LINK}
-`
-,
-
-admissionProcedure: () => `
+`,
+  admissionProcedure: () => `
 🛂 *NUST, Islamabad.*
 \`Admission Procedure\` 
 
@@ -98,10 +99,8 @@ NUST has announced its procedure for undergraduate admission via NET.
 
 \`Tap to Join, Share & Shine\`
 ${WHATSAPP_CHANNEL_LINK}
-`
-,
-
-programmesCommencement: () => `
+`,
+  programmesCommencement: () => `
 🎓 *NUST, Islamabad.*
 \`Date of Joining\`
 
@@ -114,9 +113,8 @@ Undergraduate classes at NUST will commence *from September 2025*, depending on 
 
 \`Tap to Join, Share & Shine\`
 ${WHATSAPP_CHANNEL_LINK}
-`
-,
-actSatApplications: ({ registrationWindow, scoreDeadline }) => `
+`,
+  actSatApplications: ({ registrationWindow, scoreDeadline }) => `
 🌐 *NUST, Islamabad.*
 \`ACT / SAT Admission Track\`
 
@@ -132,9 +130,23 @@ NUST is accepting ACT / SAT scores for UG admissions 2025.
 ${WHATSAPP_CHANNEL_LINK}
 `,
 
+  actSatDates: ({ actSatDates }) => `
+📆 *NUST, Islamabad.*
+\`ACT/SAT Test Dates\`
 
+Upcoming ACT/SAT test dates for NUST admissions:
 
-netWeightageInfo: () => `
+${actSatDates}
+
+📝 *Important*: Register early to secure your preferred test date and location.
+
+🔗 More Info: https://nust.edu.pk/admissions/undergraduates/dates-to-remember/
+
+\`Tap to Join, Share & Shine\`
+${WHATSAPP_CHANNEL_LINK}
+`,
+
+  netWeightageInfo: () => `
 📊 *NUST, Islamabad.*
 \`NET Subject Weightage\`
 
@@ -163,7 +175,6 @@ NUST Entry Test (NET) is stream-specific and includes subject-wise weightage bas
 ${WHATSAPP_CHANNEL_LINK}
 `,
 
-
   meritCriteria: () => `
 📊 *NUST, Islamabad.* 
 \`NET Merit Criteria\`
@@ -180,7 +191,7 @@ NUST has announced its NET merit generation criteria for undergraduate admission
 \`Tap to Join, Share & Shine\`
 ${WHATSAPP_CHANNEL_LINK}
 `,
-candidateSelection: () => `
+  candidateSelection: () => `
 📝 *NUST, Islamabad.*
 \`Candidate Selection\`
 
@@ -192,7 +203,7 @@ Selection for undergraduate programmes will *tentatively begin in August 2025*.
 
 \`Tap to Join, Share & Shine\`
 ${WHATSAPP_CHANNEL_LINK}
-`
+`,
 };
 
 module.exports = nustMessages;

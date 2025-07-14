@@ -1,6 +1,7 @@
 const { extractPieasStructuredContent } = require("../extraction/extractPieas");
-const { sendWhatsAppWithMedia } = require("../services/twilioService");
-const { sendWhatsAppMessage } = require("../services/whatsappService");
+const {
+  sendMetaCloudTemplateMessage,
+} = require("../services/metaCloudService");
 const uploadFile = require("../services/dropboxService");
 const addLogoToImage = require("../services/addLogoToImage");
 const { generateMessagesFromContent } = require("../services/aiService");
@@ -56,7 +57,6 @@ async function scrapPieas() {
     ];
 
     const pages = [];
-    let messages = [];
     let dynamicData = {
       firstTestDeadlines: null,
       firstTestDateAndScore: null,
@@ -68,6 +68,7 @@ async function scrapPieas() {
       classesCommencement: null,
     };
 
+    // Fetch and extract data from all URLs
     for (const { url, name } of pieasUrls) {
       console.log(`🌐 Scraping: ${url}`);
       const html = await fetchPageContent(url);
@@ -128,115 +129,161 @@ async function scrapPieas() {
       }
 
       if (dates.joiningDate) {
-        // Changed from joiningDate to match your property name
         dynamicData.classesCommencement = dates.joiningDate;
       }
     }
+    console.log(dynamicData)
 
-    if (dynamicData.firstTestDeadlines) {
-      messages.push(
-        pieasMessages.firstTestDeadlines({
-          deadline: dynamicData.firstTestDeadlines.firstTestDeadline,
-          deadlineWithLateFees:
-            dynamicData.firstTestDeadlines.firstTestDeadlineWithLateFees,
-        })
-      );
+    // Process and save excel file
+    // const fileName = path.join(
+    //   outputsDir,
+    //   `Pieas_admissions_${Date.now()}.xlsx`
+    // );
+    // await writeToExcel(pages, fileName);
+    // console.log(`✅ Excel file saved: ${fileName}`);
+
+    // // Upload to Dropbox
+    // const fileUrl = await uploadFile(fileName);
+    // console.log(`📤 File uploaded to Dropbox: ${fileUrl}`);
+
+    // // Prepare image URL
+    // const bannerPath = path.join(publicDir, "images", "pieas_banner.jpg");
+    // const logoPath = path.join(publicDir, "images", "logo.png");
+    // const finalImagePath = path.join(outputsDir, "pieas_banner_with_logo.jpg");
+
+    // // Generate image with logo
+    // await addLogoToImage(bannerPath, logoPath, finalImagePath);
+
+    // // Upload image to Dropbox
+    // const imageUrl = await uploadFile(finalImagePath);
+    // console.log(`📤 Logo image uploaded to Dropbox: ${imageUrl}`);
+
+    // Send all messages in order using templates
+    console.log("📱 Sending messages through Meta Cloud API...");
+
+    // Create an array of message sending functions to send in sequence
+    const messageSenders = [
+      // 1. First Test Deadlines
+      async () => {
+        console.log("📨 Sending message 1: First Test Deadlines");
+        const deadline =
+          dynamicData.firstTestDeadlines?.firstTestDeadline ||
+          "To be announced";
+        const deadlineWithLateFees =
+          dynamicData.firstTestDeadlines?.firstTestDeadlineWithLateFees ||
+          "To be announced";
+        await sendMetaCloudTemplateMessage("pieas_msg_1", [
+          deadline,
+          deadlineWithLateFees,
+        ]);
+      },
+
+      // 2. First Test Date and Score
+      async () => {
+        console.log("📨 Sending message 2: First Test Date and Score");
+        const date =
+          dynamicData.firstTestDateAndScore?.firstTestDate || "To be announced";
+        const scoreAnnouncement =
+          dynamicData.firstTestDateAndScore?.firstTestScore ||
+          "To be announced";
+        await sendMetaCloudTemplateMessage("pieas_msg_2", [
+          date,
+          scoreAnnouncement,
+        ]);
+      },
+
+      // 3. Second Test Deadlines
+      async () => {
+        console.log("📨 Sending message 3: Second Test Deadlines");
+        const openingDate =
+          dynamicData.secondTestDeadlines?.secondTestOpeningDate ||
+          "To be announced";
+        const deadline =
+          dynamicData.secondTestDeadlines?.secondTestDeadline ||
+          "To be announced";
+        const deadlineWithLateFees =
+          dynamicData.secondTestDeadlines?.secondTestDeadlineWithLateFees ||
+          "To be announced";
+        await sendMetaCloudTemplateMessage("pieas_msg_3", [
+          openingDate,
+          deadline,
+          deadlineWithLateFees,
+        ]);
+      },
+
+      // 4. Second Test Date and Score
+      async () => {
+        console.log("📨 Sending message 4: Second Test Date and Score");
+        const date =
+          dynamicData.secondTestDateAndScore?.secondTestDate ||
+          "To be announced";
+        const scoreAnnouncement =
+          dynamicData.secondTestDateAndScore?.secondTestScore ||
+          "To be announced";
+        await sendMetaCloudTemplateMessage("pieas_msg_4", [
+          date,
+          scoreAnnouncement,
+        ]);
+      },
+
+      // 5. Third Test Deadlines
+      async () => {
+        console.log("📨 Sending message 5: Third Test Deadlines");
+        const openingDate =
+          dynamicData.thirdTestDeadlines?.thirdTestOpeningDate ||
+          "To be announced";
+        const deadline =
+          dynamicData.thirdTestDeadlines?.thirdTestDeadline ||
+          "To be announced";
+        const deadlineWithLateFees =
+          dynamicData.thirdTestDeadlines?.thirdTestDeadlineWithLateFees ||
+          "To be announced";
+        await sendMetaCloudTemplateMessage("pieas_msg_5", [
+          openingDate,
+          deadline,
+          deadlineWithLateFees,
+        ]);
+      },
+
+      // 6. Third Test Date
+      async () => {
+        console.log("📨 Sending message 6: Third Test Date");
+        const date = dynamicData.thirdTestDate || "To be announced";
+        await sendMetaCloudTemplateMessage("pieas_msg_6", [date]);
+      },
+
+      // 7. Merit Number
+      async () => {
+        console.log("📨 Sending message 7: Merit Number");
+        const date = dynamicData.meritNumber || "To be announced";
+        await sendMetaCloudTemplateMessage("pieas_msg_7", [date]);
+      },
+
+      // 8. Classes Commencement
+      async () => {
+        console.log("📨 Sending message 8: Classes Commencement");
+        const date = dynamicData.classesCommencement || "To be announced";
+        await sendMetaCloudTemplateMessage("pieas_msg_8", [date]);
+      },
+
+      // 9. Programs Offered
+      async () => {
+        console.log("📨 Sending message 9: Programs Offered");
+        await sendMetaCloudTemplateMessage("pieas_msg_9", []);
+      },
+    ];
+
+    // Send all messages in sequence
+    for (let i = 0; i < messageSenders.length; i++) {
+      try {
+        await messageSenders[i]();
+        console.log(`✅ Message ${i + 1} sent successfully`);
+      } catch (error) {
+        console.error(`❌ Failed to send message ${i + 1}:`, error.message);
+      }
     }
 
-    if (dynamicData.firstTestDateAndScore) {
-      messages.push(
-        pieasMessages.firstTestDateAndScore({
-          date: dynamicData.firstTestDateAndScore.firstTestDate,
-          scoreAnnouncement: dynamicData.firstTestDateAndScore.firstTestScore,
-        })
-      );
-    }
-
-    if (dynamicData.secondTestDeadlines) {
-      messages.push(
-        pieasMessages.secondTestDeadlines({
-          openingDate: dynamicData.secondTestDeadlines.secondTestOpeningDate,
-          deadline: dynamicData.secondTestDeadlines.secondTestDeadline,
-          deadlineWithLateFees:
-            dynamicData.secondTestDeadlines.secondTestDeadlineWithLateFees,
-        })
-      );
-    }
-
-    if (dynamicData.secondTestDateAndScore) {
-      messages.push(
-        pieasMessages.secondTestDateAndScore({
-          date: dynamicData.secondTestDateAndScore.secondTestDate,
-          scoreAnnouncement: dynamicData.secondTestDateAndScore.secondTestScore,
-        })
-      );
-    }
-
-    if (dynamicData.thirdTestDeadlines) {
-      messages.push(
-        pieasMessages.thirdTestDeadlines({
-          deadline: dynamicData.thirdTestDeadlines.thirdTestDeadline,
-          deadlineWithLateFees:
-            dynamicData.thirdTestDeadlines.thirdTestDeadlineWithLateFees,
-        })
-      );
-    }
-
-    if (dynamicData.thirdTestDate) {
-      messages.push(
-        pieasMessages.thirdTestDate({
-          date: dynamicData.thirdTestDate,
-        })
-      );
-    }
-
-    if (dynamicData.meritNumber) {
-      messages.push(
-        pieasMessages.meritNumber({
-          date: dynamicData.meritNumber,
-        })
-      );
-    }
-
-    if (dynamicData.classesCommencement) {
-      messages.push(
-        pieasMessages.classesCommencement({
-          date: dynamicData.classesCommencement,
-        })
-      );
-    }
-
-    messages.push(pieasMessages.programsOffered());
-
-    const fileName = path.join(
-      outputsDir,
-      `Pieas_admissions_${Date.now()}.xlsx`
-    );
-    await writeToExcel(pages, fileName);
-    console.log(`✅ Excel file saved: ${fileName}`);
-    // Upload to Dropbox
-
-    const fileUrl = await uploadFile(fileName);
-    console.log(`📤 File uploaded to Dropbox: ${fileUrl}`);
-
-    // Prepare image URL (use your Dropbox link)
-    const bannerPath = path.join(publicDir, "images", "nust_banner.jpg");
-    const logoPath = path.join(publicDir, "images", "logo.png");
-    const finalImagePath = path.join(outputsDir, "nust_banner_with_logo.jpg");
-    // ✅ Generate image with logo
-    await addLogoToImage(bannerPath, logoPath, finalImagePath);
-
-    // ✅ Upload image to Dropbox
-    const imageUrl = await uploadFile(finalImagePath);
-    console.log(`📤 Logo image uploaded to Dropbox: ${imageUrl}`);
-
-    // Send messages one-by-one on WhatsApp
-    for (const [i, msg] of messages.entries()) {
-      console.log(`📨 Sending message ${i + 1}...`);
-      await sendWhatsAppMessage(msg);
-    }
-
-    console.log("🚀 All messages sent successfully!");
+    console.log("✅ All PIEAS messages sent successfully!");
   } catch (error) {
     console.error("❌ Process failed:", error);
     if (error.code === "ENOENT") {
