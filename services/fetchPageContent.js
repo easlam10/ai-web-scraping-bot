@@ -1,20 +1,34 @@
-const puppeteer = require("puppeteer-extra");
-const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-
-puppeteer.use(StealthPlugin());
+const puppeteer = require("puppeteer-core");
+const chromium = require("chrome-aws-lambda");
 
 async function fetchPageContent(url) {
   const browser = await puppeteer.launch({
-    headless: "new",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    executablePath: await chromium.executablePath,
+    headless: chromium.headless,
+    args: [
+      ...chromium.args,
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+    ],
     ignoreHTTPSErrors: true,
   });
 
   const page = await browser.newPage();
-  await page.goto(url, { waitUntil: "networkidle2", timeout: 300000 });
-  const html = await page.content();
-  await browser.close();
-  return html;
+  await page.setUserAgent(
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+  );
+
+  try {
+    await page.goto(url, {
+      waitUntil: "networkidle2",
+      timeout: 30000,
+    });
+    const html = await page.content();
+    return html;
+  } finally {
+    await browser.close();
+  }
 }
 
 module.exports = { fetchPageContent };
