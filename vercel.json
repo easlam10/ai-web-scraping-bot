@@ -12,6 +12,8 @@
     { "src": "/(.+)", "dest": "/public/$1" }
   ],
   "env": {
-    "WEBHOOK_VERIFY_TOKEN": "Hj7bQ9zLpX3wKtRfE5mSdC8vG2yN6aZx"
+    "WEBHOOK_VERIFY_TOKEN": "Hj7bQ9zLpX3wKtRfE5mSdC8vG2yN6aZx",
+    "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true",
+    "NODE_OPTIONS": "--no-warnings"
   }
 }

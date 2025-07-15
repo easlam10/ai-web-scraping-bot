@@ -176,28 +176,6 @@ module.exports = async (req, res) => {
             `[${timestamp}] Set recipient number to ${phoneNumber} for scrapers`
           );
 
-          // Send confirmation message using the existing metaCloudService
-          const {
-            sendMetaCloudTemplateMessage,
-          } = require("../services/metaCloudService");
-
-          try {
-            console.log(`[${timestamp}] Sending confirmation message`);
-            await sendMetaCloudTemplateMessage(
-              "consent_confirmed",
-              [],
-              phoneNumber
-            );
-            console.log(
-              `[${timestamp}] Confirmation message sent successfully`
-            );
-          } catch (msgError) {
-            console.error(
-              `[${timestamp}] Failed to send confirmation message:`,
-              msgError
-            );
-          }
-
           // Run scrapers and send information
           // Note: This might time out on Vercel's free tier if scrapers take too long
           // Consider triggering a separate process or queue for long-running tasks
