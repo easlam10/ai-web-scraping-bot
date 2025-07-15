@@ -6,80 +6,6 @@ const WHATSAPP_PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
 const WHATSAPP_RECIPIENT_NUMBER = process.env.WHATSAPP_RECIPIENT_NUMBER;
 
 /**
- * Tests connection to the WhatsApp Business API
- * @returns {Promise<object>} Test result
- */
-async function testWhatsAppConnection() {
-  try {
-    // Check if environment variables are set
-    if (!WHATSAPP_TOKEN) {
-      console.error("❌ WHATSAPP_TOKEN is not set in environment variables");
-      return { success: false, error: "Missing WHATSAPP_TOKEN" };
-    }
-
-    if (!WHATSAPP_PHONE_NUMBER_ID) {
-      console.error(
-        "❌ WHATSAPP_PHONE_NUMBER_ID is not set in environment variables"
-      );
-      return { success: false, error: "Missing WHATSAPP_PHONE_NUMBER_ID" };
-    }
-
-    if (!WHATSAPP_RECIPIENT_NUMBER) {
-      console.error(
-        "❌ WHATSAPP_RECIPIENT_NUMBER is not set in environment variables"
-      );
-      return { success: false, error: "Missing WHATSAPP_RECIPIENT_NUMBER" };
-    }
-
-    // Try to get business profile info as a simple connectivity test
-    const url = `https://graph.facebook.com/v23.0/${WHATSAPP_PHONE_NUMBER_ID}/whatsapp_business_profile`;
-
-    console.log(`🔍 Testing WhatsApp Business API connection to: ${url}`);
-
-    const response = await axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${WHATSAPP_TOKEN}`,
-      },
-    });
-
-    console.log("✅ WhatsApp Business API connection successful!");
-    console.log("📊 Business Profile:", JSON.stringify(response.data, null, 2));
-
-    return {
-      success: true,
-      businessProfile: response.data,
-      message: "Connection test successful",
-    };
-  } catch (error) {
-    console.error("❌ WhatsApp connection test failed:");
-
-    if (error.response) {
-      console.error(`Status: ${error.response.status}`);
-      console.error(`Data:`, error.response.data);
-
-      if (error.response.data?.error?.code === 190) {
-        console.error(
-          "🔑 ERROR: Invalid OAuth access token. The token may be expired or invalid."
-        );
-        return {
-          success: false,
-          error: "Invalid OAuth access token",
-          code: 190,
-          message:
-            "Your WhatsApp token is invalid or expired. Please generate a new one.",
-        };
-      }
-    }
-
-    return {
-      success: false,
-      error: error.message,
-      details: error.response?.data || "No additional details",
-    };
-  }
-}
-
-/**
  * Sends a WhatsApp template message using Meta Cloud API
  * @param {string} templateName - The name of the template to use
  * @param {Array<{type: string, text: string}>} parameters - Array of parameters for the template
@@ -127,7 +53,7 @@ async function sendMetaCloudTemplateMessage(
       type: "template",
       template: {
         name: templateName,
-        language: { code: "en_GB" },
+        language: { code: "en_US" },
         components: [
           {
             type: "body",
@@ -197,4 +123,79 @@ async function sendMetaCloudTemplateMessage(
   }
 }
 
-module.exports = { sendMetaCloudTemplateMessage, testWhatsAppConnection };
+/**
+ * Sends a plain text message using Meta Cloud API
+ * @param {string} message - The text message to send
+ * @param {string} [recipientNumber] - Optional recipient phone number (overrides env variable)
+ * @returns {Promise<object>} - Response data from Meta Cloud API
+ */
+async function sendMetaCloudTextMessage(message, recipientNumber) {
+  try {
+    // Get recipient number - use provided number, then env var, with validation
+    const recipient = recipientNumber || process.env.WHATSAPP_RECIPIENT_NUMBER;
+    if (!recipient) {
+      throw new Error(
+        "Recipient phone number is missing. Check environment variables or provide it as parameter."
+      );
+    }
+
+    // Log environment variables (without showing full token)
+    console.log("🔍 Debug - Environment Variables:");
+    console.log(
+      `- WHATSAPP_PHONE_NUMBER_ID: ${
+        WHATSAPP_PHONE_NUMBER_ID ? "✓ Set" : "❌ Not set"
+      }`
+    );
+    console.log(`- Using recipient number: ${recipient}`);
+    console.log(
+      `- WHATSAPP_TOKEN: ${
+        WHATSAPP_TOKEN
+          ? `✓ Set (starts with: ${WHATSAPP_TOKEN.substring(0, 4)}...)`
+          : "❌ Not set"
+      }`
+    );
+
+    const url = `https://graph.facebook.com/v23.0/${WHATSAPP_PHONE_NUMBER_ID}/messages`;
+    console.log(`🔗 API URL: ${url}`);
+    console.log(`📝 Message: ${message}`);
+
+    const payload = {
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: recipient,
+      type: "text",
+      text: { body: message },
+    };
+
+    console.log("📦 Request payload:", JSON.stringify(payload, null, 2));
+
+    const response = await axios.post(url, payload, {
+      headers: {
+        Authorization: `Bearer ${WHATSAPP_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log("✅ Meta Cloud WhatsApp text message sent successfully");
+    console.log("📊 Response data:", JSON.stringify(response.data, null, 2));
+    return response.data;
+  } catch (error) {
+    console.error("❌ Meta Cloud API text message error details:");
+
+    if (error.response) {
+      console.error(`Status: ${error.response.status}`);
+      console.error(`Data: ${JSON.stringify(error.response.data, null, 2)}`);
+    } else if (error.request) {
+      console.error("🌐 ERROR: No response received from server");
+    } else {
+      console.error("⚠️ ERROR:", error.message);
+    }
+
+    throw error;
+  }
+}
+
+module.exports = {
+  sendMetaCloudTemplateMessage,
+  sendMetaCloudTextMessage,
+};

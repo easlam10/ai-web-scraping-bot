@@ -20,6 +20,9 @@ const projectRoot = path.join(__dirname, "..");
 const outputsDir = path.join(projectRoot, "outputs");
 const publicDir = path.join(projectRoot, "public");
 
+// Helper function to add delay between messages
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 async function scrapNust() {
   try {
     try {
@@ -253,25 +256,25 @@ async function scrapNust() {
         await sendMetaCloudTemplateMessage("nust_msg_5", []);
       },
 
-      // 6. Admission Procedure
-      async () => {
-        console.log("📨 Sending message 6: Admission Procedure");
-        // Parameters will be manually added by the user
-        await sendMetaCloudTemplateMessage("nust_msg_6", []);
-      },
+      // // 6. Admission Procedure
+      // async () => {
+      //   console.log("📨 Sending message 6: Admission Procedure");
+      //   // Parameters will be manually added by the user
+      //   await sendMetaCloudTemplateMessage("nust_msg_6", []);
+      // },
 
-      // 7. Programmes Commencement
-      async () => {
-        console.log("📨 Sending message 7: Programmes Commencement");
-        // Parameters will be manually added by the user
-        await sendMetaCloudTemplateMessage("nust_msg_7", []);
-      },
+      // // 7. Programmes Commencement
+      // async () => {
+      //   console.log("📨 Sending message 7: Programmes Commencement");
+      //   // Parameters will be manually added by the user
+      //   await sendMetaCloudTemplateMessage("nust_msg_7", []);
+      // },
 
-      // 8. ACT/SAT Applications
-      async () => {
-        console.log("📨 Sending message 8: ACT/SAT Applications");
-        await sendMetaCloudTemplateMessage("nust_msg_8", []);
-      },
+      // // 8. ACT/SAT Applications
+      // async () => {
+      //   console.log("📨 Sending message 8: ACT/SAT Applications");
+      //   await sendMetaCloudTemplateMessage("nust_msg_8", []);
+      // },
 
       // // 9. NET Weightage Info
       // async () => {
@@ -306,11 +309,22 @@ async function scrapNust() {
       },
     ];
 
-    // Send all messages in sequence
+    // Send all messages in sequence with delay
+    const MESSAGE_DELAY = 300000; // 5 minutes delay between messages
     for (let i = 0; i < messageSenders.length; i++) {
       try {
         await messageSenders[i]();
         console.log(`✅ Message ${i + 1} sent successfully`);
+
+        // Add delay before the next message (except after the last message)
+        if (i < messageSenders.length - 1) {
+          console.log(
+            `⏱️ Waiting ${
+              MESSAGE_DELAY / 1000
+            } seconds before sending next message...`
+          );
+          await delay(MESSAGE_DELAY);
+        }
       } catch (error) {
         console.error(`❌ Failed to send message ${i + 1}:`, error.message);
       }
