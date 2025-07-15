@@ -1,9 +1,9 @@
 const puppeteer = require("puppeteer-core");
-const chromium = require("chrome-aws-lambda");
+const chromium = require("@sparticuz/chromium");
 
 async function fetchPageContent(url) {
   const browser = await puppeteer.launch({
-    executablePath: await chromium.executablePath,
+    executablePath: await chromium.executablePath(),
     headless: chromium.headless,
     args: [
       ...chromium.args,
