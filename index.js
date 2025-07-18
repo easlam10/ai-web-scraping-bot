@@ -42,10 +42,6 @@ async function runScrapers() {
   }
 }
 
-
-
-
-
 // Function to send consent request message
 async function sendConsentRequest(phoneNumber) {
   console.log(`Sending consent request to: ${phoneNumber}`);
@@ -69,7 +65,7 @@ async function sendConsentRequest(phoneNumber) {
 
     // Send template message with Yes button
     // Template must be pre-approved in Meta Business Manager
-    const result = await sendMetaCloudTemplateMessage("send_messages", []);
+    const result = await sendMetaCloudTemplateMessage("consent_message", []);
     console.log("Consent request sent successfully");
     console.log("API response:", JSON.stringify(result, null, 2));
 
@@ -116,6 +112,4 @@ if (require.main === module) {
 }
 
 // Export for use in API routes
-module.exports = { runScrapers, 
-  sendConsentRequest 
-};
+module.exports = { runScrapers, sendConsentRequest };
