@@ -12,8 +12,8 @@ const configurePuppeteer = () => {
     
     // Set environment variables for Puppeteer on Heroku
     process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = 'true';
-    // The puppeteer-heroku-buildpack installs Chrome in /app/.apt/opt/google/chrome/
-    process.env.PUPPETEER_EXECUTABLE_PATH = '/app/.apt/opt/google/chrome/chrome';
+    // The puppeteer-heroku-buildpack installs Chrome in /app/.apt/usr/bin/google-chrome
+    process.env.PUPPETEER_EXECUTABLE_PATH = '/app/.apt/usr/bin/google-chrome';
     
     console.log(`Chrome executable path set to: ${process.env.PUPPETEER_EXECUTABLE_PATH}`);
   }

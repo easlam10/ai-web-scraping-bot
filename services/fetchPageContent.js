@@ -11,7 +11,9 @@ async function fetchPageContent(url) {
     headless: "new",
     args: [
       '--no-sandbox',
-      '--disable-setuid-sandbox'
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu'
     ],
     defaultViewport: { width: 1280, height: 800 },
     ignoreHTTPSErrors: true,
