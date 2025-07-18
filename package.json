@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "heroku-postbuild": "mkdir -p ./.cache && mv /app/.cache/puppeteer ./.cache"
+    "heroku-postbuild": "mkdir -p ./.cache && if [ -d /app/.cache/puppeteer ]; then mv /app/.cache/puppeteer ./.cache; fi"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
