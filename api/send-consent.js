@@ -24,11 +24,11 @@ module.exports = async (req, res) => {
     process.env.WHATSAPP_RECIPIENT_NUMBER = phoneNumber;
 
     // Send template message for consent using send_messages template
-    await sendMetaCloudTemplateMessage("send_messages", []);
+    await sendMetaCloudTemplateMessage("consent_message", []);
 
     return res.status(200).json({
       success: true,
-      message: `Consent request sent to ${phoneNumber}. User should reply with YES to receive updates.`,
+      message: `Consent request sent to ${phoneNumber}. User should reply with yes to receive updates.`,
     });
   } catch (error) {
     console.error("Failed to send consent request:", error);
