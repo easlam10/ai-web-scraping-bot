@@ -3,9 +3,13 @@ const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const webhookHandler = require('./api/webhook');
 const sendConsentHandler = require('./api/send-consent');
+const { configurePuppeteer } = require('./config/puppeteer');
 
 // Load environment variables
 dotenv.config();
+
+// Configure Puppeteer for Heroku
+configurePuppeteer();
 
 // Create Express app
 const app = express();
