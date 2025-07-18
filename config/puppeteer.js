@@ -1,7 +1,6 @@
 /**
  * Puppeteer configuration for Heroku deployment
  */
-const chromium = require('@sparticuz/chromium-min');
 
 // Configure Puppeteer for Heroku environment
 const configurePuppeteer = () => {
@@ -11,11 +10,12 @@ const configurePuppeteer = () => {
   if (isHeroku) {
     console.log('Running on Heroku, configuring Puppeteer...');
     
-    // Set environment variables for Chromium
+    // Set environment variables for Puppeteer on Heroku
     process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = 'true';
-    process.env.PUPPETEER_EXECUTABLE_PATH = process.env.CHROME_EXECUTABLE_PATH || '/app/.apt/usr/bin/google-chrome';
+    // The puppeteer-heroku-buildpack installs Chrome in /app/.apt/opt/google/chrome/
+    process.env.PUPPETEER_EXECUTABLE_PATH = '/app/.apt/opt/google/chrome/chrome';
     
-    console.log(`Chromium executable path set to: ${process.env.PUPPETEER_EXECUTABLE_PATH}`);
+    console.log(`Chrome executable path set to: ${process.env.PUPPETEER_EXECUTABLE_PATH}`);
   }
 };
 

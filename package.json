@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "heroku-postbuild": "mkdir -p ./.cache && mv /app/.cache/puppeteer ./.cache"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -12,7 +13,6 @@
     "puppeteer": "^24.6.1",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
-    "@sparticuz/chromium-min": "^133.0.0",
     "dotenv": "^16.5.0",
     "dropbox": "^10.34.0",
     "exceljs": "^4.4.0",

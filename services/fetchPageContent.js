@@ -1,6 +1,5 @@
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-const chromium = require("@sparticuz/chromium-min");
 
 puppeteer.use(StealthPlugin());
 
@@ -10,19 +9,18 @@ async function fetchPageContent(url) {
   
   const launchOptions = {
     headless: "new",
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox'
+    ],
+    defaultViewport: { width: 1280, height: 800 },
     ignoreHTTPSErrors: true,
   };
   
-  // Only set executablePath for Heroku and handle potential errors
-  if (isHeroku) {
-    try {
-      launchOptions.executablePath = process.env.CHROME_EXECUTABLE_PATH || await chromium.executablePath();
-    } catch (error) {
-      console.warn("Warning: Could not get Chromium path, falling back to system Chrome", error.message);
-      // Let Puppeteer find the Chrome installation on Heroku
-    }
+  // Set executablePath for Heroku
+  if (isHeroku && process.env.PUPPETEER_EXECUTABLE_PATH) {
+    launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+    console.log(`Using Chrome executable path: ${launchOptions.executablePath}`);
   }
   
   const browser = await puppeteer.launch(launchOptions);

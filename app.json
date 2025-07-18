@@ -1,0 +1,17 @@
+{
+  "name": "uni-scraper",
+  "description": "A web scraping application that extracts admission information from various university websites",
+  "repository": "https://github.com/yourusername/ai-uni-scraping-bot",
+  "keywords": ["node", "puppeteer", "scraping"],
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-apt"
+    },
+    {
+      "url": "https://github.com/jontewks/puppeteer-heroku-buildpack"
+    },
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-nodejs"
+    }
+  ]
+}
