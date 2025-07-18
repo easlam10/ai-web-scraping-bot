@@ -144,13 +144,13 @@ module.exports = async (req, res) => {
             console.log(`[${timestamp}] User clicked yes button/quick reply`);
           }
         }
-        // Check if this is a text message containing exactly "YES"
+        // Check if this is a text message containing "yes" in any case
         else if (message.type === "text" && message.text) {
           const text = message.text.body.trim().toUpperCase();
           console.log(`[${timestamp}] Received text message: "${text}"`);
 
-          // Strict matching - only exact "YES" or "Y"
-          if (text === "YES" || text === "Y") {
+          // Accept "yes" in any case (YES, yes, Yes, etc.)
+          if (text === "YES" || text === "Y" || text === "YES." || text === "Y." || text.includes("YES")) {
             userConsented = true;
             console.log(`[${timestamp}] User consent detected in text`);
           }
