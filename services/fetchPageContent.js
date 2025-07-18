@@ -1,12 +1,19 @@
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+const chromium = require("@sparticuz/chromium-min");
 
 puppeteer.use(StealthPlugin());
 
 async function fetchPageContent(url) {
+  // Check if running on Heroku (process.env.DYNO exists)
+  const isHeroku = !!process.env.DYNO;
+  
   const browser = await puppeteer.launch({
     headless: "new",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: isHeroku ? await chromium.executablePath() : undefined,
+    ignoreHTTPSErrors: true,
   });
 
   const page = await browser.newPage();

@@ -168,26 +168,7 @@ module.exports = async (req, res) => {
             `[${timestamp}] Set recipient number to ${phoneNumber} for scrapers`
           );
 
-          // Send confirmation message
-          const {
-            sendMetaCloudTemplateMessage,
-          } = require("../services/metaCloudService");
-
-          try {
-            console.log(`[${timestamp}] Sending confirmation message`);
-            await sendMetaCloudTemplateMessage(
-              "consent_confirmed",
-              []
-            );
-            console.log(
-              `[${timestamp}] Confirmation message sent successfully`
-            );
-          } catch (msgError) {
-            console.error(
-              `[${timestamp}] Failed to send confirmation message:`,
-              msgError
-            );
-          }
+          // Skip confirmation message and proceed directly to scrapers
 
           // Run scrapers and send information
           console.log(`[${timestamp}] Starting to run scrapers...`);
