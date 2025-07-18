@@ -132,7 +132,7 @@ async function scrapPieas() {
         dynamicData.classesCommencement = dates.joiningDate;
       }
     }
-    console.log(dynamicData)
+    // console.log(dynamicData)
 
     // Process and save excel file
     // const fileName = path.join(

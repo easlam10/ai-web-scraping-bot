@@ -3,13 +3,24 @@ const { runScrapers } = require("../index");
 
 // Environment variables are automatically available in Vercel
 
+// In-memory store to prevent duplicate processing (in production, use Redis or database)
+const processedMessages = new Set();
+
+// Track the last processed message ID in environment to persist across serverless restarts
+function getLastProcessedMessageId() {
+  return process.env.LAST_PROCESSED_MESSAGE_ID || null;
+}
+
+function setLastProcessedMessageId(messageId) {
+  process.env.LAST_PROCESSED_MESSAGE_ID = messageId;
+}
+
 module.exports = async (req, res) => {
   // Add timestamp to all logs
   const timestamp = new Date().toISOString();
   console.log(`[${timestamp}] ===== WEBHOOK RECEIVED =====`);
   console.log(`[${timestamp}] Method: ${req.method}`);
   console.log(`[${timestamp}] URL: ${req.url}`);
-  console.log(`[${timestamp}] Headers:`, JSON.stringify(req.headers, null, 2));
 
   // Handle GET request (for verification)
   if (req.method === "GET") {
@@ -63,34 +74,7 @@ module.exports = async (req, res) => {
         return res.status(400).end("No request body");
       }
 
-      console.log(
-        `[${timestamp}] FULL WEBHOOK REQUEST BODY:`,
-        JSON.stringify(req.body, null, 2)
-      );
-
-      // Debug the structure of the request body
-      const hasEntry = req.body.entry ? "Yes" : "No";
-      const hasChanges =
-        req.body.entry && req.body.entry[0] && req.body.entry[0].changes
-          ? "Yes"
-          : "No";
-      const hasValue =
-        hasChanges === "Yes" && req.body.entry[0].changes[0].value
-          ? "Yes"
-          : "No";
-      const hasMessages =
-        hasValue === "Yes" && req.body.entry[0].changes[0].value.messages
-          ? "Yes"
-          : "No";
-
-      console.log(`[${timestamp}] Request body structure check:`, {
-        hasEntry,
-        hasChanges,
-        hasValue,
-        hasMessages,
-      });
-
-      // Check if this is a message and not a delivery report
+      // Check if this is a message and not a delivery report or status update
       if (
         req.body.entry &&
         req.body.entry[0].changes &&
@@ -98,25 +82,39 @@ module.exports = async (req, res) => {
       ) {
         const message = req.body.entry[0].changes[0].value.messages[0];
         const phoneNumber = message.from;
+        const messageId = message.id;
 
+        console.log(`[${timestamp}] Message ID: ${messageId}`);
+        console.log(`[${timestamp}] From phone number: ${phoneNumber}`);
         console.log(
-          `[${timestamp}] Message type:`,
-          message.type || "undefined"
+          `[${timestamp}] Message type: ${message.type || "undefined"}`
         );
-        console.log(
-          `[${timestamp}] Message content:`,
-          JSON.stringify(message, null, 2)
-        );
-        console.log(`[${timestamp}] From phone number:`, phoneNumber);
+
+        // Check if we've already processed this message (both in-memory and environment)
+        const lastProcessedId = getLastProcessedMessageId();
+        if (processedMessages.has(messageId) || messageId === lastProcessedId) {
+          console.log(
+            `[${timestamp}] Message ${messageId} already processed, skipping`
+          );
+          return res.status(200).end("OK");
+        }
+
+        // Add message to processed set and environment
+        processedMessages.add(messageId);
+        setLastProcessedMessageId(messageId);
+
+        // Clean up old messages (keep only last 100 to prevent memory leaks)
+        if (processedMessages.size > 100) {
+          const messagesArray = Array.from(processedMessages);
+          processedMessages.clear();
+          messagesArray.slice(-50).forEach((id) => processedMessages.add(id));
+        }
 
         let userConsented = false;
 
-        // Check if this is a interactive message (button click) - FIXED
+        // Check if this is an interactive message (button click)
         if (message.interactive) {
-          console.log(
-            `[${timestamp}] Interactive message received:`,
-            JSON.stringify(message.interactive, null, 2)
-          );
+          console.log(`[${timestamp}] Interactive message received`);
 
           // Get the ID or title of the button
           const buttonId =
@@ -126,39 +124,33 @@ module.exports = async (req, res) => {
             message.interactive.quick_reply?.payload ||
             "";
 
-          console.log(`[${timestamp}] Button ID detected:`, buttonId);
-
-          // For quick replies, also check the payload or title
           const buttonTitle = (
             message.interactive.button_reply?.title ||
             message.interactive.quick_reply?.title ||
             ""
           ).toUpperCase();
 
-          console.log(`[${timestamp}] Button title detected:`, buttonTitle);
+          console.log(
+            `[${timestamp}] Button ID: ${buttonId}, Title: ${buttonTitle}`
+          );
 
-          // If the user clicked "yes" or a button with YES in the title/payload
+          // Strict matching for interactive messages
           if (
             buttonId === "yes_button" ||
             buttonId === "YES" ||
-            buttonTitle === "YES" ||
-            buttonTitle.includes("YES")
+            buttonTitle === "YES"
           ) {
             userConsented = true;
             console.log(`[${timestamp}] User clicked yes button/quick reply`);
           }
         }
-        // Check if this is a text message containing "YES"
+        // Check if this is a text message containing exactly "YES"
         else if (message.type === "text" && message.text) {
           const text = message.text.body.trim().toUpperCase();
-          console.log(`[${timestamp}] Received text message:`, text);
+          console.log(`[${timestamp}] Received text message: "${text}"`);
 
-          if (
-            text === "YES" ||
-            text === "Y" ||
-            text.includes("YES") ||
-            text === "1"
-          ) {
+          // Strict matching - only exact "YES" or "Y"
+          if (text === "YES" || text === "Y") {
             userConsented = true;
             console.log(`[${timestamp}] User consent detected in text`);
           }
@@ -176,7 +168,7 @@ module.exports = async (req, res) => {
             `[${timestamp}] Set recipient number to ${phoneNumber} for scrapers`
           );
 
-          // Send confirmation message using the existing metaCloudService
+          // Send confirmation message
           const {
             sendMetaCloudTemplateMessage,
           } = require("../services/metaCloudService");
@@ -199,8 +191,6 @@ module.exports = async (req, res) => {
           }
 
           // Run scrapers and send information
-          // Note: This might time out on Vercel's free tier if scrapers take too long
-          // Consider triggering a separate process or queue for long-running tasks
           console.log(`[${timestamp}] Starting to run scrapers...`);
           try {
             await runScrapers();
@@ -217,21 +207,23 @@ module.exports = async (req, res) => {
           );
         }
       } else {
-        console.log(
-          `[${timestamp}] Received non-message webhook event or delivery report`
-        );
-        console.log(`[${timestamp}] Event type:`, req.body.object || "unknown");
+        // Handle delivery reports and status updates
+        console.log(`[${timestamp}] Received non-message webhook event`);
 
-        // Check for status updates
         if (
           req.body.entry &&
           req.body.entry[0].changes &&
           req.body.entry[0].changes[0].value.statuses
         ) {
-          console.log(
-            `[${timestamp}] Status update received:`,
-            JSON.stringify(req.body.entry[0].changes[0].value.statuses, null, 2)
-          );
+          console.log(`[${timestamp}] Status update received - ignoring`);
+        } else if (
+          req.body.entry &&
+          req.body.entry[0].changes &&
+          req.body.entry[0].changes[0].value.errors
+        ) {
+          console.log(`[${timestamp}] Error update received - ignoring`);
+        } else {
+          console.log(`[${timestamp}] Unknown webhook event type - ignoring`);
         }
       }
 
