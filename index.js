@@ -46,7 +46,7 @@ async function runScrapers() {
 
 
 
-Function to send consent request message
+// Function to send consent request message
 async function sendConsentRequest(phoneNumber) {
   console.log(`Sending consent request to: ${phoneNumber}`);
   console.log("Environment variables before sending:");

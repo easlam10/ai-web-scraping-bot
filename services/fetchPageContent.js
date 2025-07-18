@@ -1,32 +1,19 @@
-const axios = require("axios");
-const { browserless } = require("../config/keys");
+const puppeteer = require("puppeteer-extra");
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+
+puppeteer.use(StealthPlugin());
 
 async function fetchPageContent(url) {
-  try {
-    const response = await axios.post(
-      `https://production-sfo.browserless.io/content?token=${browserless.apiKey}`,
-      {
-        url: url,
-        gotoOptions: {
-          waitUntil: "networkidle2",
-          timeout: 60000,
-        },
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+  const browser = await puppeteer.launch({
+    headless: "new",
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
 
-    return response.data;
-  } catch (error) {
-    console.error(
-      "Error fetching page content with browserless:",
-      error.response?.data || error.message
-    );
-    throw error;
-  }
+  const page = await browser.newPage();
+  await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
+  const html = await page.content();
+  await browser.close();
+  return html;
 }
 
 module.exports = { fetchPageContent };

@@ -1,7 +1,6 @@
 // API endpoint to send consent message
 const {
-  sendMetaCloudTemplateMessage,
-  sendMetaCloudTextMessage,
+  sendMetaCloudTemplateMessage
 } = require("../services/metaCloudService");
 
 module.exports = async (req, res) => {
@@ -24,10 +23,8 @@ module.exports = async (req, res) => {
     // This ensures the metaCloudService will use it as the recipient
     process.env.WHATSAPP_RECIPIENT_NUMBER = phoneNumber;
 
-    // Send text message asking for consent
-    const message =
-      "Would you like to receive university admission updates? Please reply with YES to confirm.";
-    await sendMetaCloudTextMessage(message, phoneNumber);
+    // Send template message for consent using send_messages template
+    await sendMetaCloudTemplateMessage("send_messages", []);
 
     return res.status(200).json({
       success: true,
