@@ -156,16 +156,10 @@ module.exports = async (req, res) => {
           }
         }
 
-        // Check if this is a response to the send_messages template
-        const isResponseToSendMessages = message.context && 
-          message.context.id && 
-          message.context.from && 
-          (message.context.referred_product === "whatsapp" || !message.context.referred_product);
-        
-        // Process consent if granted and it's a response to send_messages template
-        if (userConsented && isResponseToSendMessages) {
+        // Process consent if granted - simplified to run for any "yes" response
+        if (userConsented) {
           console.log(
-            `[${timestamp}] User ${phoneNumber} consented to receive messages from send_messages template`
+            `[${timestamp}] User ${phoneNumber} consented to receive messages`
           );
 
           // Set the recipient number in environment variable
@@ -183,8 +177,7 @@ module.exports = async (req, res) => {
             console.log(`[${timestamp}] Sending confirmation message`);
             await sendMetaCloudTemplateMessage(
               "consent_confirmed",
-              [],
-              phoneNumber
+              []
             );
             console.log(
               `[${timestamp}] Confirmation message sent successfully`
@@ -207,11 +200,6 @@ module.exports = async (req, res) => {
               scraperError
             );
           }
-        } else if (userConsented) {
-          console.log(
-            `[${timestamp}] User ${phoneNumber} consented but not in response to send_messages template`
-          );
-        }
         } else {
           console.log(
             `[${timestamp}] No consent detected from user ${phoneNumber}`

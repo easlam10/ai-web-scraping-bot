@@ -42,7 +42,7 @@ async function runScrapers() {
   }
 }
 
-// Function to send consent request message
+// // Function to send consent request message
 async function sendConsentRequest(phoneNumber) {
   console.log(`Sending consent request to: ${phoneNumber}`);
   console.log("Environment variables before sending:");
@@ -105,9 +105,25 @@ if (require.main === module) {
       )
       .catch((err) => console.error("Error sending consent request:", err));
   } else {
-    console.log("Available commands:");
-    console.log("  node index.js run-scrapers");
-    console.log("  node index.js send-consent PHONE_NUMBER");
+    // Default behavior: send consent message using recipient from env
+    const recipientNumber = process.env.WHATSAPP_RECIPIENT_NUMBER;
+    if (recipientNumber) {
+      console.log(
+        `Sending consent message to ${recipientNumber} from environment variable`
+      );
+      sendConsentRequest(recipientNumber)
+        .then((result) =>
+          console.log(
+            `Consent request result: ${result.success ? "Success" : "Failed"}`
+          )
+        )
+        .catch((err) => console.error("Error sending consent request:", err));
+    } else {
+      console.log("Available commands:");
+      console.log("  node index.js run-scrapers");
+      console.log("  node index.js send-consent PHONE_NUMBER");
+      console.log("  node index.js (uses WHATSAPP_RECIPIENT_NUMBER from .env)");
+    }
   }
 }
 
