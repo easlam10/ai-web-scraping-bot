@@ -63,7 +63,7 @@ async function runScrapers() {
     return { success: false, error: error.message };
   }
 }
-runScrapers();
+
 // Function to send consent request message
 async function sendConsentRequest(phoneNumber) {
   console.log(`Sending consent request to: ${phoneNumber}`);
