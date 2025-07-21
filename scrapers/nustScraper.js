@@ -20,8 +20,7 @@ const projectRoot = path.join(__dirname, "..");
 const outputsDir = path.join(projectRoot, "outputs");
 const publicDir = path.join(projectRoot, "public");
 
-// Helper function to add delay between messages
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 
 async function scrapNust() {
   try {
@@ -133,7 +132,7 @@ async function scrapNust() {
       }
     }
 
-    // console.log(dynamicData)
+    console.log(dynamicData)
 
     // // Process and save excel file
     // const fileName = path.join(
@@ -164,23 +163,23 @@ async function scrapNust() {
 
     // Create an array of message sending functions to send in sequence
     const messageSenders = [
-      // // 1. NET Admission Schedule
-      // async () => {
-      //   console.log("📨 Sending message 1: NET Admission Schedule");
-      //   // Adding netData parameters for testing
-      //   const series = dynamicData.netDates?.series || "upcoming";
-      //   const deadline = dynamicData.netDates?.deadline || "To be announced";
-      //   const examStartDate =
-      //     dynamicData.netDates?.examStartDate || "To be announced";
+  //     // // 1. NET Admission Schedule
+  //     // async () => {
+  //     //   console.log("📨 Sending message 1: NET Admission Schedule");
+  //     //   // Adding netData parameters for testing
+  //     //   const series = dynamicData.netDates?.series || "upcoming";
+  //     //   const deadline = dynamicData.netDates?.deadline || "To be announced";
+  //     //   const examStartDate =
+  //     //     dynamicData.netDates?.examStartDate || "To be announced";
 
-      //   console.log("Test parameters:", { series, deadline, examStartDate });
+  //     //   console.log("Test parameters:", { series, deadline, examStartDate });
 
-      //   await sendMetaCloudTemplateMessage("nust_msg_1", [
-      //     series,
-      //     deadline,
-      //     examStartDate,
-      //   ]);
-      // },
+  //     //   await sendMetaCloudTemplateMessage("nust_msg_1", [
+  //     //     series,
+  //     //     deadline,
+  //     //     examStartDate,
+  //     //   ]);
+  //     // },
 
       // 2. Math Course Info
       async () => {
@@ -322,6 +321,7 @@ async function scrapNust() {
       console.error("- Public:", publicDir);
     }
   }
+  
 }
 
 module.exports = scrapNust;

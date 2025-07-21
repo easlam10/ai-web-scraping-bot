@@ -7,14 +7,6 @@ function extractDatesFromGikiStructuredContent(structuredData) {
     orientationDates: { orientationDate: null, commencementDate: null },
   };
 
-  // Look for schedule-specific paragraphs first
-  const scheduleParagraphs = structuredData.filter(
-    (item) => item.type === "paragraph" && item.isSchedule === true
-  );
-  for (const para of scheduleParagraphs) {
-    extractDatesFromText(para.text, result);
-  }
-
   // First check tables (most likely structure for dates)
   const tables = structuredData.filter((item) => item.type === "table");
   for (const table of tables) {
@@ -32,189 +24,44 @@ function extractDatesFromGikiStructuredContent(structuredData) {
   for (const list of lists) {
     for (const item of list.items) {
       // Try to split list items that might contain label: value pairs
-      const parts = item.split(/[:•\-–—]\s+/);
+      const parts = item.split(/[:•\-]\s+/);
       if (parts.length >= 2) {
         const label = parts[0].toLowerCase().trim();
         const value = parts.slice(1).join(" ").trim();
         extractDatesFromLabelValuePair(label, value, result);
-      } else {
-        // Try to extract dates directly from the text
-        extractDatesFromText(item, result);
       }
     }
   }
 
-  // Finally check paragraphs
-  const paragraphs = structuredData.filter(
-    (item) => item.type === "paragraph" && item.isSchedule !== true
-  );
+  // Finally check paragraphs (least likely but possible)
+  const paragraphs = structuredData.filter((item) => item.type === "paragraph");
   for (const para of paragraphs) {
     // Look for patterns like "Application Start: January 1, 2023"
-    const matches = para.text.match(/([a-zA-Z\s]+)[:]\s*([^\n]+)/g);
+    const matches = para.text.match(/([a-zA-Z\s]+):\s*([^\n]+)/g);
     if (matches) {
       matches.forEach((match) => {
-        try {
-          const [full, label, value] = match.match(
-            /([a-zA-Z\s]+)[:]\s*([^\n]+)/
-          );
-          if (label && value) {
-            extractDatesFromLabelValuePair(
-              label.toLowerCase().trim(),
-              value.trim(),
-              result
-            );
-          }
-        } catch (e) {
-          // Skip if regex match fails
-        }
+        const [_, label, value] = match.match(/([a-zA-Z\s]+):\s*([^\n]+)/);
+        extractDatesFromLabelValuePair(
+          label.toLowerCase().trim(),
+          value.trim(),
+          result
+        );
       });
-    } else {
-      // Try to extract dates directly from the text
-      extractDatesFromText(para.text, result);
     }
   }
 
   return result;
 }
 
-// Helper function to extract dates from free text
-function extractDatesFromText(text, result) {
-  const lowerText = text.toLowerCase();
-
-  // Application dates
-  if (lowerText.includes("application") || lowerText.includes("apply")) {
-    if (
-      lowerText.includes("start") ||
-      lowerText.includes("open") ||
-      lowerText.includes("from")
-    ) {
-      const dateMatch = text.match(
-        /(\d{1,2}(?:st|nd|rd|th)?\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*(?:\s+\d{4})?)/i
-      );
-      if (dateMatch) {
-        result.applicationDates = result.applicationDates || {};
-        result.applicationDates.startDate = dateMatch[1];
-      }
-    }
-
-    if (
-      lowerText.includes("deadline") ||
-      lowerText.includes("close") ||
-      lowerText.includes("last date") ||
-      lowerText.includes("till") ||
-      lowerText.includes("until")
-    ) {
-      const dateMatch = text.match(
-        /(\d{1,2}(?:st|nd|rd|th)?\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*(?:\s+\d{4})?)/i
-      );
-      if (dateMatch) {
-        result.applicationDates = result.applicationDates || {};
-        result.applicationDates.deadlineDate = dateMatch[1];
-      }
-    }
-  }
-
-  // Financial aid
-  if (
-    lowerText.includes("financial") &&
-    (lowerText.includes("assistance") ||
-      lowerText.includes("aid") ||
-      lowerText.includes("scholarship"))
-  ) {
-    const dateMatch = text.match(
-      /(\d{1,2}(?:st|nd|rd|th)?\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*(?:\s+\d{4})?)/i
-    );
-    if (dateMatch) {
-      result.financialAidDeadline = dateMatch[1];
-    }
-  }
-
-  // Admission test
-  if (
-    lowerText.includes("admission test") ||
-    lowerText.includes("entry test") ||
-    (lowerText.includes("test") && lowerText.includes("date"))
-  ) {
-    const dateMatch = text.match(
-      /(\d{1,2}(?:st|nd|rd|th)?\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*(?:\s+\d{4})?)/i
-    );
-    if (dateMatch) {
-      result.admissionTestDates = result.admissionTestDates || {};
-      result.admissionTestDates.testDate = dateMatch[1];
-    }
-  }
-
-  // Result announcement
-  if (
-    lowerText.includes("result") ||
-    lowerText.includes("announcement") ||
-    lowerText.includes("declared")
-  ) {
-    const dateMatch = text.match(
-      /(\d{1,2}(?:st|nd|rd|th)?\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*(?:\s+\d{4})?)/i
-    );
-    if (
-      dateMatch &&
-      (lowerText.includes("test") || lowerText.includes("exam"))
-    ) {
-      result.admissionTestDates = result.admissionTestDates || {};
-      result.admissionTestDates.resultDate = dateMatch[1];
-    }
-  }
-
-  // Merit list
-  if (lowerText.includes("merit") || lowerText.includes("selection list")) {
-    const dateMatch = text.match(
-      /(\d{1,2}(?:st|nd|rd|th)?\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*(?:\s+\d{4})?)/i
-    );
-    if (dateMatch) {
-      result.meritListDate = dateMatch[1];
-    }
-  }
-
-  // Orientation and classes commencement
-  if (
-    lowerText.includes("orientation") ||
-    lowerText.includes("joining") ||
-    lowerText.includes("induction")
-  ) {
-    const dateMatch = text.match(
-      /(\d{1,2}(?:st|nd|rd|th)?\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*(?:\s+\d{4})?)/i
-    );
-    if (dateMatch) {
-      result.orientationDates = result.orientationDates || {};
-      result.orientationDates.orientationDate = dateMatch[1];
-    }
-  }
-
-  if (
-    lowerText.includes("commencement") ||
-    lowerText.includes("classes begin") ||
-    lowerText.includes("start of classes")
-  ) {
-    const dateMatch = text.match(
-      /(\d{1,2}(?:st|nd|rd|th)?\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*(?:\s+\d{4})?)/i
-    );
-    if (dateMatch) {
-      result.orientationDates = result.orientationDates || {};
-      result.orientationDates.commencementDate = dateMatch[1];
-    }
-  }
-}
-
 // Helper function to process label-value pairs
 function extractDatesFromLabelValuePair(label, value, result) {
   // Application dates
-  if (
-    label.includes("application start") ||
-    label.includes("registration open")
-  ) {
+  if (label.includes("application start")) {
     result.applicationDates = result.applicationDates || {};
     result.applicationDates.startDate = value;
   } else if (
     label.includes("application deadline") ||
-    label.includes("last date to apply") ||
-    label.includes("closing date")
+    label.includes("last date to apply")
   ) {
     result.applicationDates = result.applicationDates || {};
     result.applicationDates.deadlineDate = value;
@@ -223,51 +70,35 @@ function extractDatesFromLabelValuePair(label, value, result) {
   // Financial aid
   if (
     label.includes("financial assistance") ||
-    label.includes("last date for receipt") ||
-    label.includes("financial aid") ||
-    label.includes("scholarship")
+    label.includes("last date for receipt")
   ) {
     result.financialAidDeadline = value;
   }
 
   // Admission test dates
-  if (
-    label.includes("admission test") ||
-    label.includes("entry test") ||
-    label.includes("test date")
-  ) {
+  if (label.includes("admission test") || label.includes("test date")) {
     result.admissionTestDates = result.admissionTestDates || {};
     result.admissionTestDates.testDate = value;
   } else if (
     label.includes("result announcement") ||
-    label.includes("result date") ||
-    label.includes("declaration of result")
+    label.includes("result date")
   ) {
     result.admissionTestDates = result.admissionTestDates || {};
     result.admissionTestDates.resultDate = value;
   }
 
   // Merit list
-  if (
-    label.includes("merit list") ||
-    label.includes("selection list") ||
-    label.includes("final selection")
-  ) {
+  if (label.includes("merit list") || label.includes("selection list")) {
     result.meritListDate = value;
   }
 
   // Orientation dates
-  if (
-    label.includes("orientation") ||
-    label.includes("joining") ||
-    label.includes("induction")
-  ) {
+  if (label.includes("orientation") || label.includes("joining")) {
     result.orientationDates = result.orientationDates || {};
     result.orientationDates.orientationDate = value;
   } else if (
     label.includes("commencement") ||
-    label.includes("classes begin") ||
-    label.includes("start of classes")
+    label.includes("classes begin")
   ) {
     result.orientationDates = result.orientationDates || {};
     result.orientationDates.commencementDate = value;

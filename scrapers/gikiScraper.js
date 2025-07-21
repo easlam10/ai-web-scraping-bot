@@ -148,57 +148,57 @@ async function scrapGiki() {
     // Create an array of message sending functions to send in sequence
     const messageSenders = [
       // 1. Application Schedule
-      async () => {
-        console.log("📨 Sending message 1: Application Schedule");
-        const startingDate =
-          dynamicData.applicationDates?.startDate || "To be announced";
-        const deadline =
-          dynamicData.applicationDates?.deadlineDate || "To be announced";
-        await sendMetaCloudTemplateMessage("giki_msg_1", [
-          startingDate,
-          deadline,
-        ]);
-      },
+      // async () => {
+      //   console.log("📨 Sending message 1: Application Schedule");
+      //   const startingDate =
+      //     dynamicData.applicationDates?.startDate || "To be announced";
+      //   const deadline =
+      //     dynamicData.applicationDates?.deadlineDate || "To be announced";
+      //   await sendMetaCloudTemplateMessage("giki_msg_1", [
+      //     startingDate,
+      //     deadline,
+      //   ]);
+      // },
 
-      // 2. Financial Aid Deadline
-      async () => {
-        console.log("📨 Sending message 2: Financial Aid Deadline");
-        const deadline = dynamicData.financialAidDeadline || "To be announced";
-        await sendMetaCloudTemplateMessage("giki_msg_2", [deadline]);
-      },
+      // // 2. Financial Aid Deadline
+      // async () => {
+      //   console.log("📨 Sending message 2: Financial Aid Deadline");
+      //   const deadline = dynamicData.financialAidDeadline || "To be announced";
+      //   await sendMetaCloudTemplateMessage("giki_msg_2", [deadline]);
+      // },
 
-      // 3. Admission Test
-      async () => {
-        console.log("📨 Sending message 3: Admission Test");
-        const testDate =
-          dynamicData.admissionTestDates?.testDate || "To be announced";
-        const resultDate =
-          dynamicData.admissionTestDates?.resultDate || "To be announced";
-        await sendMetaCloudTemplateMessage("giki_msg_3", [
-          testDate,
-          resultDate,
-        ]);
-      },
+      // // 3. Admission Test
+      // async () => {
+      //   console.log("📨 Sending message 3: Admission Test");
+      //   const testDate =
+      //     dynamicData.admissionTestDates?.testDate || "To be announced";
+      //   const resultDate =
+      //     dynamicData.admissionTestDates?.resultDate || "To be announced";
+      //   await sendMetaCloudTemplateMessage("giki_msg_3", [
+      //     testDate,
+      //     resultDate,
+      //   ]);
+      // },
 
-      // 4. Merit List
-      async () => {
-        console.log("📨 Sending message 4: Merit List");
-        const meritListDate = dynamicData.meritListDate || "To be announced";
-        await sendMetaCloudTemplateMessage("giki_msg_4", [meritListDate]);
-      },
+      // // 4. Merit List
+      // async () => {
+      //   console.log("📨 Sending message 4: Merit List");
+      //   const meritListDate = dynamicData.meritListDate || "To be announced";
+      //   await sendMetaCloudTemplateMessage("giki_msg_4", [meritListDate]);
+      // },
 
-      // 5. Orientation Date
-      async () => {
-        console.log("📨 Sending message 5: Orientation Date");
-        const orientationDate =
-          dynamicData.orientationDates?.orientationDate || "To be announced";
-        const classesCommencementDate =
-          dynamicData.orientationDates?.commencementDate || "To be announced";
-        await sendMetaCloudTemplateMessage("giki_msg_5", [
-          orientationDate,
-          classesCommencementDate,
-        ]);
-      },
+      // // 5. Orientation Date
+      // async () => {
+      //   console.log("📨 Sending message 5: Orientation Date");
+      //   const orientationDate =
+      //     dynamicData.orientationDates?.orientationDate || "To be announced";
+      //   const classesCommencementDate =
+      //     dynamicData.orientationDates?.commencementDate || "To be announced";
+      //   await sendMetaCloudTemplateMessage("giki_msg_5", [
+      //     orientationDate,
+      //     classesCommencementDate,
+      //   ]);
+      // },
 
       // 6. Classes Commencement
       async () => {

@@ -12,16 +12,16 @@ async function runScrapers() {
     process.env.WHATSAPP_RECIPIENT_NUMBER
   );
   try {
-    // try {
-    //   console.log("Running NUST scraper...");
-    //   await scrapNust();
-    //   console.log("NUST scraper completed successfully");
-    // } catch (nustError) {
-    //   console.error("NUST scraper error:", nustError.message);
-    //   // Continue with other scrapers even if NUST fails
-    // }
+    try {
+      console.log("Running NUST scraper...");
+      await scrapNust();
+      console.log("NUST scraper completed successfully");
+    } catch (nustError) {
+      console.error("NUST scraper error:", nustError.message);
+      // Continue with other scrapers even if NUST fails
+    }
 
-    // Uncomment these as needed
+    
     // try {
     //   console.log("Running NUMS scraper...");
     //   await scrapNums();
@@ -30,13 +30,13 @@ async function runScrapers() {
     //   console.error("NUMS scraper error:", numsError.message);
     // }
 
-    // try {
-    //   console.log("Running PIEAS scraper...");
-    //   await scrapPieas();
-    //   console.log("PIEAS scraper completed successfully");
-    // } catch (pieasError) {
-    //   console.error("PIEAS scraper error:", pieasError.message);
-    // }
+    try {
+      console.log("Running PIEAS scraper...");
+      await scrapPieas();
+      console.log("PIEAS scraper completed successfully");
+    } catch (pieasError) {
+      console.error("PIEAS scraper error:", pieasError.message);
+    }
 
     try {
       console.log("Running GIKI scraper...");
@@ -46,13 +46,13 @@ async function runScrapers() {
       console.error("GIKI scraper error:", gikiError.message);
     }
 
-    // try {
-    //   console.log("Running FAST scraper...");
-    //   await scrapFast();
-    //   console.log("FAST scraper completed successfully");
-    // } catch (fastError) {
-    //   console.error("FAST scraper error:", fastError.message);
-    // }
+    try {
+      console.log("Running FAST scraper...");
+      await scrapFast();
+      console.log("FAST scraper completed successfully");
+    } catch (fastError) {
+      console.error("FAST scraper error:", fastError.message);
+    }
 
     console.log("All scrapers completed!");
     return { success: true };
