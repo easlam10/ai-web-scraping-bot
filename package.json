@@ -1,29 +1,39 @@
 {
-  "name": "uni-scraper",
+  "name": "edtech-news-aggregator",
   "version": "1.0.0",
-  "main": "index.js",
+  "type": "module",
+  "description": "An automated tool that fetches, summarizes, and delivers educational technology news updates via WhatsApp",
+  "main": "src/index.js",
   "scripts": {
     "start": "node server.js",
     "heroku-postbuild": "mkdir -p ./.cache && if [ -d /app/.cache/puppeteer ]; then mv /app/.cache/puppeteer ./.cache; fi"
   },
+  "keywords": [
+    "edtech",
+    "news",
+    "aggregator",
+    "whatsapp",
+    "gemini",
+    "ai",
+    "puppeteer",
+    "scraping"
+  ],
+  "author": "",
+  "license": "MIT",
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
-    "axios": "^1.9.0",
-    "cheerio": "^1.0.0",
-    "puppeteer": "^24.6.1",
-    "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.2",
-    "dotenv": "^16.5.0",
-    "dropbox": "^10.34.0",
-    "exceljs": "^4.4.0",
-    "express": "^4.18.2",
-    "body-parser": "^1.20.2",
-    "node-cron": "^3.0.3",
-    "node-fetch": "^2.7.0",
-    "sharp": "^0.34.1",
-    "twilio": "^5.5.2"
+    "@google/generative-ai": "^0.24.1",  
+    "axios": "^1.9.0",                  
+    "cheerio": "^1.0.0-rc.12",
+    "dotenv": "^16.5.0",                
+    "puppeteer": "^24.6.1",              
+    "express": "^4.18.2",                
+    "node-cron": "^3.0.3"               
   },
   "engines": {
-    "node": "18.x"
+    "node": "18.x",                    
+    "npm": "9.x"                        
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }

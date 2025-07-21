@@ -64,34 +64,34 @@ async function scrapNust() {
         url: "https://nust.edu.pk/admissions/undergraduates/dates-to-remember/",
         name: "Dates to rememeber",
       },
-      // {
-      //   url: "https://nust.edu.pk/admissions/undergraduates/ug-admission-application-processing-fee/",
-      //   name: "Application processing fee",
-      // },
-      // {
-      //   url: "https://nust.edu.pk/admissions/undergraduates/cancellation-of-admission/",
-      //   name: "Cancellation of admission",
-      // },
-      // {
-      //   url: "https://nust.edu.pk/admissions/undergraduates/subjects-included-in-net-with-weightings/",
-      //   name: "Subjects included in NET",
-      // },
-      // {
-      //   url: "https://nust.edu.pk/admissions/undergraduates/merit-criteria-for-admission-on-net-basis",
-      //   name: "Merit generation criteria",
-      // },
-      // {
-      //   url: "https://nust.edu.pk/admissions/undergraduates/ineligibility-criteria/",
-      //   name: "ineligibility criteria",
-      // },
-      // {
-      //   url: "https://www.facebook.com/nustofficial/  ",
-      //   name: "Digital Page Link",
-      // },
-      // {
-      //   url: "https://nust.edu.pk/about-us/resources-offices/ ",
-      //   name: "Contact Details",
-      // },
+      {
+        url: "https://nust.edu.pk/admissions/undergraduates/ug-admission-application-processing-fee/",
+        name: "Application processing fee",
+      },
+      {
+        url: "https://nust.edu.pk/admissions/undergraduates/cancellation-of-admission/",
+        name: "Cancellation of admission",
+      },
+      {
+        url: "https://nust.edu.pk/admissions/undergraduates/subjects-included-in-net-with-weightings/",
+        name: "Subjects included in NET",
+      },
+      {
+        url: "https://nust.edu.pk/admissions/undergraduates/merit-criteria-for-admission-on-net-basis",
+        name: "Merit generation criteria",
+      },
+      {
+        url: "https://nust.edu.pk/admissions/undergraduates/ineligibility-criteria/",
+        name: "ineligibility criteria",
+      },
+      {
+        url: "https://www.facebook.com/nustofficial/  ",
+        name: "Digital Page Link",
+      },
+      {
+        url: "https://nust.edu.pk/about-us/resources-offices/ ",
+        name: "Contact Details",
+      },
     ];
 
     const pages = [];
@@ -301,11 +301,6 @@ async function scrapNust() {
           registrationWindow,
           scoreDeadline,
         ]);
-      },
-      async () => {
-        console.log("📨 Sending message 12: Ask User");
-        // Parameters will be manually added by the user
-        await sendMetaCloudTemplateMessage("send_messages", []);
       },
     ];
 

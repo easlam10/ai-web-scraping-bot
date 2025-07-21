@@ -90,20 +90,29 @@ async function scrapGiki() {
 
       const dates = extractDatesFromGikiStructuredContent(structuredData);
 
-      if (dates.applicationDates) {
-        dynamicData.applicationDates = dates.applicationDates;
+      // Application dates
+      if (dates.applicationDates?.startDate || dates.applicationDates?.deadlineDate) {
+        dynamicData.applicationDates = dynamicData.applicationDates || dates.applicationDates;
       }
+
+      // Financial aid deadline
       if (dates.financialAidDeadline) {
-        dynamicData.financialAidDeadline = dates.financialAidDeadline;
+        dynamicData.financialAidDeadline = dynamicData.financialAidDeadline || dates.financialAidDeadline;
       }
-      if (dates.admissionTestDates) {
-        dynamicData.admissionTestDates = dates.admissionTestDates;
+
+      // Admission test dates
+      if (dates.admissionTestDates?.testDate || dates.admissionTestDates?.resultDate) {
+        dynamicData.admissionTestDates = dynamicData.admissionTestDates || dates.admissionTestDates;
       }
+
+      // Merit list date
       if (dates.meritListDate) {
-        dynamicData.meritListDate = dates.meritListDate;
+        dynamicData.meritListDate = dynamicData.meritListDate || dates.meritListDate;
       }
-      if (dates.orientationDates) {
-        dynamicData.orientationDates = dates.orientationDates;
+
+      // Orientation dates
+      if (dates.orientationDates?.orientationDate || dates.orientationDates?.commencementDate) {
+        dynamicData.orientationDates = dynamicData.orientationDates || dates.orientationDates;
       }
     }
 
@@ -142,7 +151,7 @@ async function scrapGiki() {
       async () => {
         console.log("📨 Sending message 1: Application Schedule");
         const startingDate =
-          dynamicData.applicationDates?.startingDate || "To be announced";
+          dynamicData.applicationDates?.startDate || "To be announced";
         const deadline =
           dynamicData.applicationDates?.deadlineDate || "To be announced";
         await sendMetaCloudTemplateMessage("giki_msg_1", [
