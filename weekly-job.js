@@ -1,7 +1,7 @@
 // weekly-job.js
 const now = new Date();
 
-if (now.getDay() === 1) { // Only run on Monday (0=Sunday, 1=Monday, etc.)
+if (now.getDay() === 2) { // Only run on Monday (0=Sunday, 1=Monday, etc.)
   console.log('Running weekly task...');
   
 //   // Option 1: Directly require and run your weekly task

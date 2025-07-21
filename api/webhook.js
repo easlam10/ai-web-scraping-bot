@@ -1,8 +1,6 @@
 // Webhook handler for Meta/WhatsApp
 const { runScrapers } = require("../index");
 
-// Environment variables are automatically available in Vercel
-
 // In-memory store to prevent duplicate processing (in production, use Redis or database)
 const processedMessages = new Set();
 
@@ -116,6 +114,12 @@ module.exports = async (req, res) => {
         if (message.interactive) {
           console.log(`[${timestamp}] Interactive message received`);
 
+          // Log the entire interactive object for debugging
+          console.log(
+            `[${timestamp}] Interactive message content:`,
+            JSON.stringify(message.interactive)
+          );
+
           // Get the ID or title of the button
           const buttonId =
             message.interactive.button_reply?.id ||
@@ -134,11 +138,13 @@ module.exports = async (req, res) => {
             `[${timestamp}] Button ID: ${buttonId}, Title: ${buttonTitle}`
           );
 
-          // Strict matching for interactive messages
+          // More inclusive matching for interactive messages
           if (
             buttonId === "yes_button" ||
             buttonId === "YES" ||
-            buttonTitle === "YES"
+            buttonId === "yes" ||
+            buttonTitle === "YES" ||
+            buttonTitle.includes("YES")
           ) {
             userConsented = true;
             console.log(`[${timestamp}] User clicked yes button/quick reply`);
@@ -150,7 +156,13 @@ module.exports = async (req, res) => {
           console.log(`[${timestamp}] Received text message: "${text}"`);
 
           // Accept "yes" in any case (YES, yes, Yes, etc.)
-          if (text === "YES" || text === "Y" || text === "YES." || text === "Y." || text.includes("YES")) {
+          if (
+            text === "YES" ||
+            text === "Y" ||
+            text === "YES." ||
+            text === "Y." ||
+            text.includes("YES")
+          ) {
             userConsented = true;
             console.log(`[${timestamp}] User consent detected in text`);
           }
