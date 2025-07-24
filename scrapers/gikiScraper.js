@@ -7,6 +7,7 @@ const addLogoToImage = require("../services/addLogoToImage");
 const { generateMessagesFromContent } = require("../services/aiService");
 const { writeToExcel } = require("../services/excelWriter");
 const { fetchPageContent } = require("../services/fetchPageContent");
+const whatsappWebService = require("../services/whatsappWebService");
 const {
   extractDatesFromGikiStructuredContent,
 } = require("../importantInfo/extractGikiInfo");
@@ -91,34 +92,48 @@ async function scrapGiki() {
       const dates = extractDatesFromGikiStructuredContent(structuredData);
 
       // Application dates
-      if (dates.applicationDates?.startDate || dates.applicationDates?.deadlineDate) {
-        dynamicData.applicationDates = dynamicData.applicationDates || dates.applicationDates;
+      if (
+        dates.applicationDates?.startDate ||
+        dates.applicationDates?.deadlineDate
+      ) {
+        dynamicData.applicationDates =
+          dynamicData.applicationDates || dates.applicationDates;
       }
 
       // Financial aid deadline
       if (dates.financialAidDeadline) {
-        dynamicData.financialAidDeadline = dynamicData.financialAidDeadline || dates.financialAidDeadline;
+        dynamicData.financialAidDeadline =
+          dynamicData.financialAidDeadline || dates.financialAidDeadline;
       }
 
       // Admission test dates
-      if (dates.admissionTestDates?.testDate || dates.admissionTestDates?.resultDate) {
-        dynamicData.admissionTestDates = dynamicData.admissionTestDates || dates.admissionTestDates;
+      if (
+        dates.admissionTestDates?.testDate ||
+        dates.admissionTestDates?.resultDate
+      ) {
+        dynamicData.admissionTestDates =
+          dynamicData.admissionTestDates || dates.admissionTestDates;
       }
 
       // Merit list date
       if (dates.meritListDate) {
-        dynamicData.meritListDate = dynamicData.meritListDate || dates.meritListDate;
+        dynamicData.meritListDate =
+          dynamicData.meritListDate || dates.meritListDate;
       }
 
       // Orientation dates
-      if (dates.orientationDates?.orientationDate || dates.orientationDates?.commencementDate) {
-        dynamicData.orientationDates = dynamicData.orientationDates || dates.orientationDates;
+      if (
+        dates.orientationDates?.orientationDate ||
+        dates.orientationDates?.commencementDate
+      ) {
+        dynamicData.orientationDates =
+          dynamicData.orientationDates || dates.orientationDates;
       }
     }
 
     console.log(dynamicData);
 
-    // // Process and save excel file
+    // Process and save excel file
     // const fileName = path.join(
     //   outputsDir,
     //   `Giki_admissions_${Date.now()}.xlsx`
@@ -130,7 +145,7 @@ async function scrapGiki() {
     // const fileUrl = await uploadFile(fileName);
     // console.log(`📤 File uploaded to Dropbox: ${fileUrl}`);
 
-    // Prepare image URL
+    // // Prepare image URL
     // const bannerPath = path.join(publicDir, "images", "giki_banner.jpg");
     // const logoPath = path.join(publicDir, "images", "logo.png");
     // const finalImagePath = path.join(outputsDir, "giki_banner_with_logo.jpg");
@@ -142,111 +157,33 @@ async function scrapGiki() {
     // const imageUrl = await uploadFile(finalImagePath);
     // console.log(`📤 Logo image uploaded to Dropbox: ${imageUrl}`);
 
-    // Send all messages in order using templates
-    console.log("📱 Sending messages through Meta Cloud API...");
+    // Send all messages in sequence using templates
+    console.log("📱 Sending messages through WhatsApp Web...");
 
-    // Create an array of message sending functions to send in sequence
-    const messageSenders = [
-      // 1. Application Schedule
-      // async () => {
-      //   console.log("📨 Sending message 1: Application Schedule");
-      //   const startingDate =
-      //     dynamicData.applicationDates?.startDate || "To be announced";
-      //   const deadline =
-      //     dynamicData.applicationDates?.deadlineDate || "To be announced";
-      //   await sendMetaCloudTemplateMessage("giki_msg_1", [
-      //     startingDate,
-      //     deadline,
-      //   ]);
-      // },
+    // Recipient phone number (replace with actual number when needed)
+    const recipientNumber =
+      process.env.DEFAULT_RECIPIENT_NUMBER;
 
-      // // 2. Financial Aid Deadline
-      // async () => {
-      //   console.log("📨 Sending message 2: Financial Aid Deadline");
-      //   const deadline = dynamicData.financialAidDeadline || "To be announced";
-      //   await sendMetaCloudTemplateMessage("giki_msg_2", [deadline]);
-      // },
+    // Prepare all messages using templates and dynamic data
+    const messages = [
+      // Merit Criteria
+      gikiMessages.meritCriteria(),
 
-      // // 3. Admission Test
-      // async () => {
-      //   console.log("📨 Sending message 3: Admission Test");
-      //   const testDate =
-      //     dynamicData.admissionTestDates?.testDate || "To be announced";
-      //   const resultDate =
-      //     dynamicData.admissionTestDates?.resultDate || "To be announced";
-      //   await sendMetaCloudTemplateMessage("giki_msg_3", [
-      //     testDate,
-      //     resultDate,
-      //   ]);
-      // },
+      // Eligibility Criteria
+      gikiMessages.eligibiltyCriteria(),
 
-      // // 4. Merit List
-      // async () => {
-      //   console.log("📨 Sending message 4: Merit List");
-      //   const meritListDate = dynamicData.meritListDate || "To be announced";
-      //   await sendMetaCloudTemplateMessage("giki_msg_4", [meritListDate]);
-      // },
+      // Test Syllabus
+      gikiMessages.testSyllabus(),
 
-      // // 5. Orientation Date
-      // async () => {
-      //   console.log("📨 Sending message 5: Orientation Date");
-      //   const orientationDate =
-      //     dynamicData.orientationDates?.orientationDate || "To be announced";
-      //   const classesCommencementDate =
-      //     dynamicData.orientationDates?.commencementDate || "To be announced";
-      //   await sendMetaCloudTemplateMessage("giki_msg_5", [
-      //     orientationDate,
-      //     classesCommencementDate,
-      //   ]);
-      // },
+      // Application Payment Method
+      gikiMessages.applicationPaymentMethod(),
 
-      // 6. Classes Commencement
-      async () => {
-        console.log("📨 Sending message 6: Classes Commencement");
-        // No parameters needed for this template
-        await sendMetaCloudTemplateMessage("giki_msg_6", []);
-      },
-
-      // 7. Merit Criteria
-      async () => {
-        console.log("📨 Sending message 7: Merit Criteria");
-        await sendMetaCloudTemplateMessage("giki_msg_7", []);
-      },
-
-      // 8. Eligibility Criteria
-      async () => {
-        console.log("📨 Sending message 8: Eligibility Criteria");
-        await sendMetaCloudTemplateMessage("giki_msg_8", []);
-      },
-
-      // 9. Test Syllabus
-      async () => {
-        console.log("📨 Sending message 9: Test Syllabus");
-        await sendMetaCloudTemplateMessage("giki_msg_9", []);
-      },
-
-      // 10. Application Payment Method
-      async () => {
-        console.log("📨 Sending message 10: Application Payment Method");
-        await sendMetaCloudTemplateMessage("giki_msg_10", []);
-      },
-
-      // 11. Transfer Details
-      async () => {
-        console.log("📨 Sending message 11: Transfer Details");
-        await sendMetaCloudTemplateMessage("giki_msg_11", []);
-      },
+      // Transfer Details
+      gikiMessages.transferDetails(),
     ];
 
     // Send all messages in sequence
-    for (let i = 0; i < messageSenders.length; i++) {
-      try {
-        await messageSenders[i]();
-        console.log(`✅ Message ${i + 1} sent successfully`);
-      } catch (error) {
-        console.error(`❌ Failed to send message ${i + 1}:`, error.message);
-      }
-    }
+    await whatsappWebService.sendMessagesInSequence(recipientNumber, messages);
 
     console.log("✅ All GIKI messages sent successfully!");
   } catch (error) {

@@ -8,6 +8,7 @@ const addLogoToImage = require("../services/addLogoToImage");
 const { writeToExcel } = require("../services/excelWriter");
 const { fetchPageContent } = require("../services/fetchPageContent");
 const { generateMessagesFromContent } = require("../services/aiService");
+const whatsappWebService = require("../services/whatsappWebService");
 const {
   extractLatestNetDeadlineAndExamDate,
   extractMathCourseDateForFscPreMed,
@@ -19,8 +20,6 @@ const fs = require("fs");
 const projectRoot = path.join(__dirname, "..");
 const outputsDir = path.join(projectRoot, "outputs");
 const publicDir = path.join(projectRoot, "public");
-
-
 
 async function scrapNust() {
   try {
@@ -132,9 +131,9 @@ async function scrapNust() {
       }
     }
 
-    console.log(dynamicData)
+    console.log(dynamicData);
 
-    // // Process and save excel file
+    // Process and save excel file
     // const fileName = path.join(
     //   outputsDir,
     //   `Nust_admissions_${Date.now()}.xlsx`
@@ -158,66 +157,38 @@ async function scrapNust() {
     // const imageUrl = await uploadFile(finalImagePath);
     // console.log(`📤 Logo image uploaded to Dropbox: ${imageUrl}`);
 
-    // Send all messages in order using templates
-    console.log("📱 Sending messages through Meta Cloud API...");
+    // Send all messages in sequence using templates
+    console.log("📱 Sending messages through WhatsApp Web...");
 
-    // Create an array of message sending functions to send in sequence
-    const messageSenders = [
-  //     // // 1. NET Admission Schedule
-  //     // async () => {
-  //     //   console.log("📨 Sending message 1: NET Admission Schedule");
-  //     //   // Adding netData parameters for testing
-  //     //   const series = dynamicData.netDates?.series || "upcoming";
-  //     //   const deadline = dynamicData.netDates?.deadline || "To be announced";
-  //     //   const examStartDate =
-  //     //     dynamicData.netDates?.examStartDate || "To be announced";
+    // Recipient phone number (replace with actual number when needed)
+    const recipientNumber =
+      process.env.DEFAULT_RECIPIENT_NUMBER 
 
-  //     //   console.log("Test parameters:", { series, deadline, examStartDate });
+    // Prepare all messages using templates and dynamic data
+    const messages = [
+      // Math Course Info
+      nustMessages.mathCourseInfo({
+        mathDeadline: dynamicData.mathDeadline || "To be announced",
+      }),
 
-  //     //   await sendMetaCloudTemplateMessage("nust_msg_1", [
-  //     //     series,
-  //     //     deadline,
-  //     //     examStartDate,
-  //     //   ]);
-  //     // },
+      // New Programmes
+      nustMessages.newProgrammes(),
 
-      // 2. Math Course Info
-      async () => {
-        console.log("📨 Sending message 2: Math Course Info");
-        const mathDeadline = dynamicData.mathDeadline || "To be announced";
-        await sendMetaCloudTemplateMessage("nust_msg_2", [mathDeadline]);
-      },
-
-      // 3. New Programmes
-      async () => {
-        console.log("📨 Sending message 3: New Programmes");
-        // Parameters will be manually added by the user
-        await sendMetaCloudTemplateMessage("nust_msg_3", []);
-      },
-
-      // 4. Multi Entry Test Schedule
-      async () => {
-        console.log("📨 Sending message 4: Multi Entry Test Schedule");
-
-        // Initialize default values
-        let series1 = "To be announced";
-        let series2 = "To be announced";
-        let series3 = "To be announced";
-        let series4 = "To be announced";
+      // Multi Entry Test Schedule
+      // This message requires a specific structure, so we'll format it directly
+      (() => {
+        // Initialize test data
+        let tests = [];
+        let netSeries = "upcoming";
 
         // Check if netSeries is an array (direct result from extractAllNetRegistrationRanges)
         if (Array.isArray(dynamicData.netSeries)) {
-          // Process each series directly
-          for (const test of dynamicData.netSeries) {
-            if (test.series === "Series I") {
-              series1 = `${test.startDate} - ${test.endDate}`;
-            } else if (test.series === "Series II") {
-              series2 = `${test.startDate} - ${test.endDate}`;
-            } else if (test.series === "Series III") {
-              series3 = `${test.startDate} - ${test.endDate}`;
-            } else if (test.series === "Series IV") {
-              series4 = `${test.startDate} - ${test.endDate}`;
-            }
+          tests = dynamicData.netSeries.map((test) => ({
+            name: test.series,
+            date: `${test.startDate} - ${test.endDate}`,
+          }));
+          if (tests.length > 0) {
+            netSeries = tests[0].name.split(" ")[0]; // Extract "Series" from "Series I"
           }
         }
         // Original nested structure handling
@@ -225,92 +196,42 @@ async function scrapNust() {
           dynamicData.netSeries?.tests &&
           Array.isArray(dynamicData.netSeries.tests)
         ) {
-          const tests = dynamicData.netSeries.tests;
-          for (const test of tests) {
-            if (test.name?.includes("Series I")) {
-              series1 = test.date;
-            } else if (test.name?.includes("Series II")) {
-              series2 = test.date;
-            } else if (test.name?.includes("Series III")) {
-              series3 = test.date;
-            } else if (test.name?.includes("Series IV")) {
-              series4 = test.date;
-            }
-          }
+          tests = dynamicData.netSeries.tests;
+          netSeries = dynamicData.netSeries.series || "upcoming";
         }
 
-        // Send the message with all 4 parameters
-        await sendMetaCloudTemplateMessage("nust_msg_4", [
-          series1,
-          series2,
-          series3,
-          series4,
-        ]);
-      },
+        return nustMessages.multiEntryTestSchedule({ tests, netSeries });
+      })(),
 
-      // 5. Academic Qualification
-      async () => {
-        console.log("📨 Sending message 5: Academic Qualification");
-        // Parameters will be manually added by the user
-        await sendMetaCloudTemplateMessage("nust_msg_5", []);
-      },
+      // Academic Qualification
+      nustMessages.academicQualification(),
 
-      // 6. Admission Procedure
-      async () => {
-        console.log("📨 Sending message 6: Admission Procedure");
-        // Parameters will be manually added by the user
-        await sendMetaCloudTemplateMessage("nust_msg_6", []);
-      },
+      // Admission Procedure
+      nustMessages.admissionProcedure(),
 
-      // 7. Programmes Commencement
-      async () => {
-        console.log("📨 Sending message 7: Programmes Commencement");
-        // Parameters will be manually added by the user
-        await sendMetaCloudTemplateMessage("nust_msg_7", []);
-      },
+      // Programmes Commencement
+      nustMessages.programmesCommencement(),
 
-      // 8. ACT/SAT Applications
-      async () => {
-        console.log("📨 Sending message 8: ACT/SAT Applications");
-        await sendMetaCloudTemplateMessage("nust_msg_8", []);
-      },
+      // ACT/SAT Applications
+      nustMessages.actSatApplications({
+        registrationWindow:
+          dynamicData.actSatDates?.registrationWindow || "To be announced",
+        scoreDeadline:
+          dynamicData.actSatDates?.scoreDeadline || "To be announced",
+      }),
 
-      // 9. NET Weightage Info
-      async () => {
-        console.log("📨 Sending message 9: NET Weightage Info");
-        // Parameters will be manually added by the user
-        await sendMetaCloudTemplateMessage("nust_msg_9", []);
-      },
+      // NET Weightage Info
+      nustMessages.netWeightageInfo(),
 
-      // 10. Merit Criteria
-      async () => {
-        console.log("📨 Sending message 10: Merit Criteria");
-        // Parameters will be manually added by the user
-        await sendMetaCloudTemplateMessage("must_msg_10", []);
-      },
+      // Merit Criteria
+      nustMessages.meritCriteria(),
 
-      // 11. ACT/SAT Test Dates
-      async () => {
-        console.log("📨 Sending message 11: ACT/SAT Test Dates");
-        const registrationWindow =
-          dynamicData.actSatDates?.registrationWindow || "To be announced";
-        const scoreDeadline =
-          dynamicData.actSatDates?.scoreDeadline || "To be announced";
-        await sendMetaCloudTemplateMessage("must_msg_11", [
-          registrationWindow,
-          scoreDeadline,
-        ]);
-      },
+      // Candidate Selection
+      nustMessages.candidateSelection(),
     ];
 
-    for (let i = 0; i < messageSenders.length; i++) {
-      try {
-        await messageSenders[i]();
-        console.log(`✅ Message ${i + 1} sent successfully`);
-      } catch (error) {
-        console.error(`❌ Failed to send message ${i + 1}:`, error.message);
-      }
-    }
+    // Send all messages in sequence
+    await whatsappWebService.sendMessagesInSequence(recipientNumber, messages);
 
     console.log("✅ All NUST messages sent successfully!");
   } catch (error) {
@@ -321,7 +242,6 @@ async function scrapNust() {
       console.error("- Public:", publicDir);
     }
   }
-  
 }
 
 module.exports = scrapNust;

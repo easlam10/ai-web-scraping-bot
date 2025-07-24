@@ -1,68 +1,68 @@
 const WHATSAPP_CHANNEL_LINK = "https://whatsapp.com/channel/0029Vb9qWtQGE56sYuYipX1P";
 
 const gikiMessages = {
-  applicationSchedule: ({ startingDate, deadline }) => `
-📅 *GIKI, Swabi*
-\`Admission Schedule\` 
+//   applicationSchedule: ({ startingDate, deadline }) => `
+// 📅 *GIKI, Swabi*
+// \`Admission Schedule\` 
 
-GIKI has announced its schedule for applications for undergraduate admissions in 2025.
+// GIKI has announced its schedule for applications for undergraduate admissions in 2025.
 
-🟢 *Starting Date:* ${startingDate}
-⛔ *Deadline:* ${deadline}
+// 🟢 *Starting Date:* ${startingDate}
+// ⛔ *Deadline:* ${deadline}
 
-\`Tap to Join, Share & Shine\`
-${WHATSAPP_CHANNEL_LINK}
-`,
+// \`Tap to Join, Share & Shine\`
+// ${WHATSAPP_CHANNEL_LINK}
+// `,
 
-  financialAidDeadline: ({ deadline }) => `
-💸 *GIKI, Swabi*
-\`Financial Aid Deadline\` 
+//   financialAidDeadline: ({ deadline }) => `
+// 💸 *GIKI, Swabi*
+// \`Financial Aid Deadline\` 
 
-Financial aid is available for those to be admitted in the academic year 2025-2026. 
+// Financial aid is available for those to be admitted in the academic year 2025-2026. 
 
-📌 *Deadline to submit financial aid documents:* ${deadline}
+// 📌 *Deadline to submit financial aid documents:* ${deadline}
 
-\`Tap to Join, Share & Shine\`
-${WHATSAPP_CHANNEL_LINK}
-`,
+// \`Tap to Join, Share & Shine\`
+// ${WHATSAPP_CHANNEL_LINK}
+// `,
 
-  admissionTest: ({ testDate, resultDate }) => `
-📝 *GIKI, Swabi*
-\`Admission Test\` 
+//   admissionTest: ({ testDate, resultDate }) => `
+// 📝 *GIKI, Swabi*
+// \`Admission Test\` 
 
-GIKI has announced the test schedule for admissions in 2025.
+// GIKI has announced the test schedule for admissions in 2025.
 
-🗓️ *Admission Test Date:* ${testDate}
-📢 *Result Announcement Date:* ${resultDate}
+// 🗓️ *Admission Test Date:* ${testDate}
+// 📢 *Result Announcement Date:* ${resultDate}
 
-\`Tap to Join, Share & Shine\`
-${WHATSAPP_CHANNEL_LINK}
-`,
+// \`Tap to Join, Share & Shine\`
+// ${WHATSAPP_CHANNEL_LINK}
+// `,
 
-  meritList: ({ meritListDate }) => `
-🏅 *GIKI, Swabi*
-\`Merit List Announcement\` 
+//   meritList: ({ meritListDate }) => `
+// 🏅 *GIKI, Swabi*
+// \`Merit List Announcement\` 
 
-GIKI has announced the date for the release of merit list for admissions in 2025.
+// GIKI has announced the date for the release of merit list for admissions in 2025.
 
- *Merit List Date:* ${meritListDate}
+//  *Merit List Date:* ${meritListDate}
 
-\`Tap to Join, Share & Shine\`
-${WHATSAPP_CHANNEL_LINK}
-`,
+// \`Tap to Join, Share & Shine\`
+// ${WHATSAPP_CHANNEL_LINK}
+// `,
 
-  classesCommencement: ({ orientationDate, classesCommencementDate }) => `
-🎓 *GIKI, Swabi*
-\`Date of Joining\` 
+//   classesCommencement: ({ orientationDate, classesCommencementDate }) => `
+// 🎓 *GIKI, Swabi*
+// \`Date of Joining\` 
 
-GIKI has announced the dates for classes commencement in 2025.
+// GIKI has announced the dates for classes commencement in 2025.
 
- *Joining and Orientation:* ${orientationDate}
- *Commencement of Classes:* ${classesCommencementDate}
+//  *Joining and Orientation:* ${orientationDate}
+//  *Commencement of Classes:* ${classesCommencementDate}
 
-\`Tap to Join, Share & Shine\`
-${WHATSAPP_CHANNEL_LINK}
-`,
+// \`Tap to Join, Share & Shine\`
+// ${WHATSAPP_CHANNEL_LINK}
+// `,
 meritCriteria: () => `
 📊 *GIKI, Topi.*
 \`GIKI Merit Criteria\`

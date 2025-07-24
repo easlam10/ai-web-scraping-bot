@@ -2,21 +2,21 @@ const WHATSAPP_CHANNEL_LINK =
   "https://whatsapp.com/channel/0029Vb9qWtQGE56sYuYipX1P";
 
 const nustMessages = {
-  netAdmissionSchedule: ({
-    deadline,
-    examStartDate,
-    series,
-  }) => ` 📅 *NUST, Islamabad.*
-\`Admission Schedule\` 
+//   netAdmissionSchedule: ({
+//     deadline,
+//     examStartDate,
+//     series,
+//   }) => ` 📅 *NUST, Islamabad.*
+// \`Admission Schedule\` 
 
-NUST has announced its deadline for the NET-2025 ${series} intake.
+// NUST has announced its deadline for the NET-2025 ${series} intake.
 
-🗓️ *Deadline:* ${deadline}
-📝 *Exam Commencement Date:* ${examStartDate}
+// 🗓️ *Deadline:* ${deadline}
+// 📝 *Exam Commencement Date:* ${examStartDate}
 
-\`Tap to Join, Share & Shine\`
-${WHATSAPP_CHANNEL_LINK}
-`,
+// \`Tap to Join, Share & Shine\`
+// ${WHATSAPP_CHANNEL_LINK}
+// `,
   mathCourseInfo: ({ mathDeadline }) => `
 📘 *NUST, Islamabad.*
 \`Math Course Information\` 
