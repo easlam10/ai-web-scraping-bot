@@ -19,8 +19,7 @@ node_modules/**/docs/
 node_modules/**/*.md
 node_modules/**/LICENSE
 
-# Puppeteer cache (we use the buildpack version)
-node_modules/puppeteer/.local-chromium/
+
 
 # Unnecessary files from large packages
 node_modules/exceljs/dist/exceljs.*.js.map
