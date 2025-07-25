@@ -17,10 +17,14 @@
     "dropbox": "^10.34.0",
     "exceljs": "^4.4.0",
     "express": "^4.18.2",
+    "mongoose": "^8.0.3",
     "body-parser": "^1.20.2",
+    "qrcode-terminal": "^0.12.0",
     "node-cron": "^3.0.3",
     "node-fetch": "^2.7.0",
-    "sharp": "^0.34.1"
+    "sharp": "^0.34.1",
+    "whatsapp-web.js": "^1.31.0",
+    "wwebjs-mongo": "^1.1.0"
   },
   "engines": {
     "node": "18.x"
